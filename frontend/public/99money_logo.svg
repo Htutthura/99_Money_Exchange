@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <circle cx="200" cy="200" r="190" fill="#00FF7F" />
+  <circle cx="200" cy="200" r="150" fill="black" />
+  <text x="200" y="180" font-family="Arial, sans-serif" font-size="120" font-weight="bold" fill="#00FF7F" text-anchor="middle">99</text>
+  <text x="200" y="240" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="#00FF7F" text-anchor="middle">MONEY</text>
+  <text x="200" y="290" font-family="Arial, sans-serif" font-size="25" font-weight="bold" fill="#00FF7F" text-anchor="middle">EXCHANGE SERVICE</text>
+  
+  <!-- Dollar signs -->
+  <circle cx="135" cy="180" r="25" fill="#00FF7F" />
+  <text x="135" y="192" font-family="Arial, sans-serif" font-size="35" font-weight="bold" fill="black" text-anchor="middle">$</text>
+  
+  <circle cx="265" cy="180" r="25" fill="#00FF7F" />
+  <text x="265" y="192" font-family="Arial, sans-serif" font-size="35" font-weight="bold" fill="black" text-anchor="middle">$</text>
+  
+  <!-- Dots around the circle -->
+  <circle cx="200" cy="50" r="8" fill="#00FF7F" />
+  <circle cx="240" cy="55" r="6" fill="#00FF7F" />
+  <circle cx="280" cy="70" r="8" fill="#00FF7F" />
+  <circle cx="315" cy="95" r="6" fill="#00FF7F" />
+  <circle cx="340" cy="130" r="8" fill="#00FF7F" />
+  <circle cx="350" cy="170" r="6" fill="#00FF7F" />
+  <circle cx="350" cy="210" r="8" fill="#00FF7F" />
+  <circle cx="335" cy="250" r="6" fill="#00FF7F" />
+  <circle cx="310" cy="285" r="8" fill="#00FF7F" />
+  <circle cx="275" cy="315" r="6" fill="#00FF7F" />
+  <circle cx="235" cy="335" r="8" fill="#00FF7F" />
+  <circle cx="200" cy="340" r="6" fill="#00FF7F" />
+  <circle cx="165" cy="335" r="8" fill="#00FF7F" />
+  <circle cx="125" cy="315" r="6" fill="#00FF7F" />
+  <circle cx="90" cy="285" r="8" fill="#00FF7F" />
+  <circle cx="65" cy="250" r="6" fill="#00FF7F" />
+  <circle cx="50" cy="210" r="8" fill="#00FF7F" />
+  <circle cx="50" cy="170" r="6" fill="#00FF7F" />
+  <circle cx="60" cy="130" r="8" fill="#00FF7F" />
+  <circle cx="85" cy="95" r="6" fill="#00FF7F" />
+  <circle cx="120" cy="70" r="8" fill="#00FF7F" />
+  <circle cx="160" cy="55" r="6" fill="#00FF7F" />
+  
+  <!-- Small handle on top -->
+  <rect x="190" y="20" width="20" height="15" fill="#00FF7F" />
+</svg> 

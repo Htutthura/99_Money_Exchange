@@ -1,0 +1,117 @@
+{
+    "total_profit": 905.2963071505359,
+    "remaining_thb": 15609.0,
+    "rate_spread_stats": {
+        "average": 2.6325,
+        "minimum": 1.88,
+        "maximum": 3.2
+    },
+    "customer_profits": {
+        "PTK": 156.7781757220148,
+        "Yadanar Min Aung": 83.39091393349061,
+        "Thein Htike Soe": 379.70352332394793,
+        "MCS": 285.4236941710825
+    },
+    "daily_profits": {
+        "2025-04-28": 619.1143754024044,
+        "2025-04-29": 286.18193174813143
+    },
+    "transaction_matches": [
+        {
+            "match_number": 1,
+            "sell_customer": "Shanlay",
+            "buy_customer": "PTK",
+            "matched_amount": 7620.0,
+            "mmk_paid": 979398.6,
+            "mmk_received": 999972.6,
+            "rate_spread": 2.7,
+            "profit": 156.7781757220148,
+            "date": "2025-04-28",
+            "time": "10:38:35.346395"
+        },
+        {
+            "match_number": 2,
+            "sell_customer": "Shanlay",
+            "buy_customer": "Yadanar Min Aung",
+            "matched_amount": 3805.0,
+            "mmk_paid": 489056.65,
+            "mmk_received": 500015.05,
+            "rate_spread": 2.88,
+            "profit": 83.39091393349061,
+            "date": "2025-04-28",
+            "time": "10:38:35.346395"
+        },
+        {
+            "match_number": 3,
+            "sell_customer": "Shanlay",
+            "buy_customer": "Thein Htike Soe",
+            "matched_amount": 4135.0,
+            "mmk_paid": 531471.55,
+            "mmk_received": 543380.35,
+            "rate_spread": 2.88,
+            "profit": 90.62324024046876,
+            "date": "2025-04-28",
+            "time": "10:38:35.346395"
+        },
+        {
+            "match_number": 4,
+            "sell_customer": "Aung Myint Myat",
+            "buy_customer": "Thein Htike Soe",
+            "matched_amount": 312.0,
+            "mmk_paid": 40001.52,
+            "mmk_received": 40999.92,
+            "rate_spread": 3.2,
+            "profit": 7.597595312381097,
+            "date": "2025-04-28",
+            "time": "10:38:35.346395"
+        },
+        {
+            "match_number": 5,
+            "sell_customer": "Aye Nyein",
+            "buy_customer": "Thein Htike Soe",
+            "matched_amount": 15500.0,
+            "mmk_paid": 1999965.0,
+            "mmk_received": 2036855.0,
+            "rate_spread": 2.38,
+            "profit": 280.72445019404915,
+            "date": "2025-04-28",
+            "time": "10:38:35.346395"
+        },
+        {
+            "match_number": 6,
+            "sell_customer": "THS",
+            "buy_customer": "Thein Htike Soe",
+            "matched_amount": 53.0,
+            "mmk_paid": 6865.09,
+            "mmk_received": 6964.73,
+            "rate_spread": 1.88,
+            "profit": 0.7582375770489308,
+            "date": "2025-04-29",
+            "time": "10:38:35.346395"
+        },
+        {
+            "match_number": 7,
+            "sell_customer": "THS",
+            "buy_customer": "MCS",
+            "matched_amount": 1547.0,
+            "mmk_paid": 200382.91,
+            "mmk_received": 204358.7,
+            "rate_spread": 2.57,
+            "profit": 30.09682059046177,
+            "date": "2025-04-29",
+            "time": "10:38:35.346395"
+        },
+        {
+            "match_number": 8,
+            "sell_customer": "LKK",
+            "buy_customer": "MCS",
+            "matched_amount": 13124.0,
+            "mmk_paid": 1699951.72,
+            "mmk_received": 1733680.4,
+            "rate_spread": 2.57,
+            "profit": 255.32687358062074,
+            "date": "2025-04-29",
+            "time": "10:38:35.346395"
+        }
+    ]
+}

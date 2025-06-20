@@ -1,0 +1,41 @@
+services:
+  # Backend service
+  - type: web
+    name: money-exchange-api
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: cd backend && pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: cd backend && gunicorn --bind 0.0.0.0:$PORT core.wsgi
+    envVars:
+      - key: IS_RENDER
+        value: true
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: money-exchange-db
+          property: connectionString
+      - key: FRONTEND_URL
+        value: https://money-exchange-app.onrender.com
+
+  # Frontend service
+  - type: web
+    name: money-exchange-app
+    env: static
+    region: singapore
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/build
+    envVars:
+      - key: NODE_VERSION
+        value: 18.x
+      - key: REACT_APP_API_URL
+        value: https://money-exchange-api.onrender.com
+
+# Database
+databases:
+  - name: money-exchange-db
+    plan: free
+    region: singapore
+    databaseName: money_exchange_production 
