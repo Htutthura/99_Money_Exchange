@@ -6,7 +6,7 @@ from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django_filters.rest_framework import DjangoFilterBackend
+# from django_filters.rest_framework import DjangoFilterBackend  # Temporarily disabled for minimal deployment
 from decimal import Decimal
 
 from .models import Currency, ExchangeRate, Transaction, GoogleSheetConfig, ExchangeLeftover
@@ -35,8 +35,8 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
     queryset = ExchangeRate.objects.all()
     serializer_class = ExchangeRateSerializer
     permission_classes = [IsAdminUser]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['source_currency', 'target_currency', 'date']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]  # DjangoFilterBackend temporarily disabled
+    # filterset_fields = ['source_currency', 'target_currency', 'date']  # Temporarily disabled
     search_fields = ['source_currency__code', 'target_currency__code']
     ordering_fields = ['date', 'time', 'rate']
     ordering = ['-date', '-time']
@@ -68,8 +68,8 @@ class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     permission_classes = [permissions.IsAuthenticated]  # Require authentication
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['transaction_type', 'source_currency', 'target_currency']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]  # DjangoFilterBackend temporarily disabled
+    # filterset_fields = ['transaction_type', 'source_currency', 'target_currency']  # Temporarily disabled
     search_fields = ['reference_number', 'customer_name', 'customer_id', 'notes']
     ordering_fields = ['date_time', 'source_amount', 'target_amount', 'profit']
     ordering = ['-date_time']
@@ -183,8 +183,8 @@ class ExchangeLeftoverViewSet(viewsets.ModelViewSet):
     queryset = ExchangeLeftover.objects.all()
     serializer_class = ExchangeLeftoverSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['currency', 'date_created', 'is_processed']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]  # DjangoFilterBackend temporarily disabled
+    # filterset_fields = ['currency', 'date_created', 'is_processed']  # Temporarily disabled
     ordering_fields = ['date_created', 'amount']
     ordering = ['-date_created']
     
