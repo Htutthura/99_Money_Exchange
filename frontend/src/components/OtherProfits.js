@@ -254,7 +254,7 @@ const OtherProfits = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await axios.delete(`/api/transactions/${selectedTransaction.id}/`);
+              await axios.delete(`https://99moneyexchange.pythonanywhere.com/api/transactions/${selectedTransaction.id}/`);
       setSnackbar({
         open: true,
         message: 'Transaction deleted successfully',

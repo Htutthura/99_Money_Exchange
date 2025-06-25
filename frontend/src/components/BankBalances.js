@@ -184,7 +184,7 @@ const BankBalances = () => {
       
       // Fetch all pages of bank accounts
       let allAccounts = [];
-      let url = '/api/transactions/bank-accounts/';
+              let url = 'https://99moneyexchange.pythonanywhere.com/api/transactions/bank-accounts/';
       let page = 1;
       
       while (url) {
@@ -230,7 +230,7 @@ const BankBalances = () => {
       }
       
       console.log(`Fetching exchange rate for date: ${selectedDate}`);
-      const response = await axios.get(`/api/transactions/exchange-rates/current/?date=${selectedDate}`);
+      const response = await axios.get(`https://99moneyexchange.pythonanywhere.com/api/transactions/exchange-rates/current/?date=${selectedDate}`);
       console.log('Exchange rate response:', response.data);
       
       if (response.data && response.data.rate) {
@@ -355,7 +355,7 @@ const BankBalances = () => {
     setLoading(true);
     try {
       // Save the rate using the update_or_create endpoint
-      const response = await axios.post('/api/transactions/exchange-rates/update_or_create/', {
+      const response = await axios.post('https://99moneyexchange.pythonanywhere.com/api/transactions/exchange-rates/update_or_create/', {
         date: selectedDate,
         rate: rate
       });
@@ -398,7 +398,7 @@ const BankBalances = () => {
       console.log(`Fetching balance summary with rate: ${rateValue}`);
       
       const formattedDate = formatDateForAPI(selectedDate);
-      const url = `/api/transactions/balances/summary/?date=${formattedDate}&rate=${rateValue}`;
+      const url = `https://99moneyexchange.pythonanywhere.com/api/transactions/balances/summary/?date=${formattedDate}&rate=${rateValue}`;
       console.log(`Fetching balance summary from: ${url}`);
       const response = await axios.get(url);
       
@@ -454,10 +454,10 @@ const BankBalances = () => {
     try {
       if (editingAccount) {
         // Update existing account
-        await axios.put(`/api/transactions/bank-accounts/${editingAccount.id}/`, accountFormData);
+        await axios.put(`https://99moneyexchange.pythonanywhere.com/api/transactions/bank-accounts/${editingAccount.id}/`, accountFormData);
       } else {
         // Create new account
-        await axios.post('/api/transactions/bank-accounts/', accountFormData);
+        await axios.post('https://99moneyexchange.pythonanywhere.com/api/transactions/bank-accounts/', accountFormData);
       }
       
       // Refresh accounts list
@@ -523,13 +523,13 @@ const BankBalances = () => {
     setLoading(true);
     try {
       // Use the update_or_create endpoint to handle the exchange rate
-      await axios.post('/api/transactions/exchange-rates/update_or_create/', {
+      await axios.post('https://99moneyexchange.pythonanywhere.com/api/transactions/exchange-rates/update_or_create/', {
         date: balanceFormData.date,
         rate: rate
       });
       
       // Then save the balances
-      const response = await axios.post('/api/transactions/daily-balances/batch_update/', requestData);
+      const response = await axios.post('https://99moneyexchange.pythonanywhere.com/api/transactions/daily-balances/batch_update/', requestData);
       console.log('Balance submission response:', response.data);
       
       // Refresh summary with new data
