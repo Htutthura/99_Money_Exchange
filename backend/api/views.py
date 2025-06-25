@@ -70,9 +70,9 @@ class TransactionViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]  # Require authentication
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]  # DjangoFilterBackend temporarily disabled
     # filterset_fields = ['transaction_type', 'source_currency', 'target_currency']  # Temporarily disabled
-    search_fields = ['reference_number', 'customer_name', 'customer_id', 'notes']
-    ordering_fields = ['date_time', 'source_amount', 'target_amount', 'profit']
-    ordering = ['-date_time']
+    search_fields = ['reference_number', 'customer_name', 'customer_contact', 'notes']
+    ordering_fields = ['added_at', 'source_amount', 'target_amount', 'profit']
+    ordering = ['-added_at']
     
     def perform_create(self, serializer):
         # Save transaction with authenticated user context
@@ -88,9 +88,9 @@ class TransactionViewSet(viewsets.ModelViewSet):
             # Filter transactions based on date range
             transactions = Transaction.objects.all()
             if start_date:
-                transactions = transactions.filter(date_time__date__gte=start_date)
+                transactions = transactions.filter(date__gte=start_date)
             if end_date:
-                transactions = transactions.filter(date_time__date__lte=end_date)
+                transactions = transactions.filter(date__lte=end_date)
                 
             # Overall statistics
             total_profit = transactions.aggregate(Sum('profit'))['profit__sum'] or 0

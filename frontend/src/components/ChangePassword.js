@@ -56,7 +56,7 @@ const ChangePassword = ({ open, onClose }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/auth/change-password/', {
+      const response = await fetch('https://99moneyexchange.pythonanywhere.com/api/v1/auth/change-password/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

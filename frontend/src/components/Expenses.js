@@ -50,7 +50,7 @@ const quickRanges = [
   { label: 'This Month', getRange: () => [startOfMonth(new Date()), new Date()] },
 ];
 
-const API_URL = 'http://localhost:8000/api/transactions/expenses/';
+  const API_URL = 'https://99moneyexchange.pythonanywhere.com/api/transactions/expenses/';
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
@@ -139,7 +139,7 @@ const Expenses = () => {
   useEffect(() => {
     const fetchExpenseTypes = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/transactions/expense-types/');
+        const response = await axios.get('https://99moneyexchange.pythonanywhere.com/api/transactions/expense-types/');
         // Handle both paginated and direct array responses
         const data = response.data;
         if (Array.isArray(data)) {
@@ -235,7 +235,7 @@ const Expenses = () => {
   const handleAddType = async () => {
     if (newType.trim()) {
       try {
-        const response = await axios.post('http://localhost:8000/api/transactions/expense-types/', {
+        const response = await axios.post('https://99moneyexchange.pythonanywhere.com/api/transactions/expense-types/', {
           name: newType.trim(),
           description: '',
           is_active: true

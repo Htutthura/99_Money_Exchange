@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await fetch('http://localhost:8000/api/v1/auth/login/', {
+      const response = await fetch('https://99moneyexchange.pythonanywhere.com/api/v1/auth/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
     try {
       if (token) {
         // Call backend logout endpoint
-        await fetch('http://localhost:8000/api/v1/auth/logout/', {
+        await fetch('https://99moneyexchange.pythonanywhere.com/api/v1/auth/logout/', {
           method: 'POST',
           headers: {
             'Authorization': `Token ${token}`,

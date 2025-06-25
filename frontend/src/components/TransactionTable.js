@@ -51,7 +51,7 @@ import axios from 'axios';
 import { debounce } from 'lodash';
 import { Delete as DeleteIconRefresh } from '@mui/icons-material';
 
-const API_BASE_URL = 'http://localhost:8000/api/transactions/';
+const API_BASE_URL = 'https://99moneyexchange.pythonanywhere.com/api/transactions/';
 
 // Add debug fetch options to include CORS mode and credentials
 const fetchOptions = {
@@ -76,7 +76,7 @@ const defaultHeaders = {
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api',
+      baseURL: 'https://99moneyexchange.pythonanywhere.com/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

@@ -30,7 +30,7 @@ import axios from 'axios';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { formatDateTime, formatDateForAPI, formatDateLong } from '../utils/dateUtils';
 
-const API_BASE_URL = 'http://localhost:8000/api/transactions/';
+const API_BASE_URL = 'https://99moneyexchange.pythonanywhere.com/api/transactions/';
 
 const quickRanges = [
   { label: 'Today', getRange: () => [new Date(), new Date()] },
