@@ -35,7 +35,7 @@ import { styled } from '@mui/material/styles';
 import { format } from 'date-fns';
 
 // Use the correct API URL for transactions
-const API_URL = '/api/transactions';
+const API_URL = 'https://99moneyexchange.pythonanywhere.com/api/transactions';
 
 const defaultHeaders = {
   'Content-Type': 'application/json',
