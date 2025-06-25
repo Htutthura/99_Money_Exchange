@@ -318,3 +318,5 @@ function App() {
 }
 
 export default App; 
+/ /   F o r c e   m o b i l e   n a v i g a t i o n   u p d a t e  
+ 
