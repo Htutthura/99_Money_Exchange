@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
@@ -21,5 +21,4 @@ function App() {
   );
 }
 
-export default App;
 export default App;
