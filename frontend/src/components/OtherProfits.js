@@ -168,7 +168,7 @@ const OtherProfitForm = ({ onSubmit, initialValues = null, editMode = false }) =
 };
 
 // API URL constants
-const API_BASE = '/api';
+const API_BASE = 'https://99moneyexchange.pythonanywhere.com/api';
 const API_URL = `${API_BASE}/transactions`;
 
 const OtherProfits = () => {
