@@ -634,4 +634,5 @@ const DailyProfits = () => {
   );
 };
 
-export default DailyProfits; 
+export default DailyProfits; / /   F I N A L   A L G O R I T H M   F I X   A P P L I E D   -   J u n e   2 7 ,   2 0 2 5   -   B o t h   t o t a l   p r o f i t   a n d   b r e a k d o w n   u s e   d a i l y - o n l y   c a l c u l a t i o n s  
+ 
