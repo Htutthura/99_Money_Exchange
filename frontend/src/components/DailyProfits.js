@@ -244,27 +244,73 @@ const DailyProfits = () => {
       const dates = getDatesInRange(start, end);
       for (let dateObj of dates) {
         const dateStr = formatDateForAPI(dateObj);
-        const transactions = await fetchTransactionsForRange(dateStr, dateStr);
-      const calc = calculateProfitsFromTransactions(transactions);
-        profitsArr.push({
-          date: dateStr,
-          total_profit: calc.totalProfit,
-          buy_sell_profit: calc.totalProfit - calc.otherProfit,
-          other_profit: calc.otherProfit,
-        transactionCount: calc.transactionCount,
-        thbVolume: calc.thbVolume,
-        mmkVolume: calc.mmkVolume,
-        buyCount: calc.buyCount,
-        sellCount: calc.sellCount,
-      });
-        summaryTotals.totalProfit += calc.totalProfit;
-        summaryTotals.transactionCount += calc.transactionCount;
-        summaryTotals.thbVolume += calc.thbVolume;
-        summaryTotals.mmkVolume += calc.mmkVolume;
-        summaryTotals.buyCount += calc.buyCount;
-        summaryTotals.sellCount += calc.sellCount;
-        if (calc.matched.length > 0) {
-          breakdownAll = breakdownAll.concat(calc.matched.map(m => ({ ...m, date: dateStr })));
+        
+        // Use the backend daily profits calculation endpoint
+        try {
+          const dailyResult = await calculateDailyProfits(dateObj);
+          profitsArr.push({
+            date: dateStr,
+            total_profit: dailyResult.total_profit || 0,
+            buy_sell_profit: dailyResult.buy_sell_profit || 0,
+            other_profit: dailyResult.other_profit || 0,
+            transactionCount: dailyResult.transactionCount || 0,
+            thbVolume: 0, // We'll calculate these from transactions
+            mmkVolume: 0,
+            buyCount: 0,
+            sellCount: 0,
+          });
+          
+          summaryTotals.totalProfit += (dailyResult.total_profit || 0);
+          summaryTotals.transactionCount += (dailyResult.transactionCount || 0);
+          
+          // Get transaction details for volume and breakdown calculations
+          const transactions = await fetchTransactionsForRange(dateStr, dateStr);
+          const calc = calculateProfitsFromTransactions(transactions);
+          
+          // Update the profit entry with volume and count data
+          const lastEntry = profitsArr[profitsArr.length - 1];
+          lastEntry.thbVolume = calc.thbVolume;
+          lastEntry.mmkVolume = calc.mmkVolume;
+          lastEntry.buyCount = calc.buyCount;
+          lastEntry.sellCount = calc.sellCount;
+          lastEntry.transactionCount = calc.transactionCount;
+          
+          summaryTotals.thbVolume += calc.thbVolume;
+          summaryTotals.mmkVolume += calc.mmkVolume;
+          summaryTotals.buyCount += calc.buyCount;
+          summaryTotals.sellCount += calc.sellCount;
+          summaryTotals.transactionCount = Math.max(summaryTotals.transactionCount, calc.transactionCount);
+          
+          if (calc.matched.length > 0) {
+            breakdownAll = breakdownAll.concat(calc.matched.map(m => ({ ...m, date: dateStr })));
+          }
+        } catch (error) {
+          console.error(`Error calculating daily profits for ${dateStr}:`, error);
+          // Fall back to manual calculation for this date
+          const transactions = await fetchTransactionsForRange(dateStr, dateStr);
+          const calc = calculateProfitsFromTransactions(transactions);
+          profitsArr.push({
+            date: dateStr,
+            total_profit: calc.totalProfit,
+            buy_sell_profit: calc.totalProfit - calc.otherProfit,
+            other_profit: calc.otherProfit,
+            transactionCount: calc.transactionCount,
+            thbVolume: calc.thbVolume,
+            mmkVolume: calc.mmkVolume,
+            buyCount: calc.buyCount,
+            sellCount: calc.sellCount,
+          });
+          
+          summaryTotals.totalProfit += calc.totalProfit;
+          summaryTotals.transactionCount += calc.transactionCount;
+          summaryTotals.thbVolume += calc.thbVolume;
+          summaryTotals.mmkVolume += calc.mmkVolume;
+          summaryTotals.buyCount += calc.buyCount;
+          summaryTotals.sellCount += calc.sellCount;
+          
+          if (calc.matched.length > 0) {
+            breakdownAll = breakdownAll.concat(calc.matched.map(m => ({ ...m, date: dateStr })));
+          }
         }
       }
       setProfits(profitsArr);
