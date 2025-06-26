@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -634,5 +634,4 @@ const DailyProfits = () => {
   );
 };
 
-e x p o r t   d e f a u l t   D a i l y P r o f i t s ;  
- 
+export default DailyProfits; 
