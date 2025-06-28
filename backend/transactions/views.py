@@ -1990,6 +1990,279 @@ def calculate_daily_profits(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def calculate_date_range_profits(request):
+    """
+    Calculate profits for a date range using chronological matching within that range only
+    This provides better performance than calculating each day separately
+    """
+    from django.db import transaction as db_transaction
+    
+    try:
+        # Get date range from query parameters
+        start_date_str = request.query_params.get('start_date')
+        end_date_str = request.query_params.get('end_date')
+        
+        if not start_date_str or not end_date_str:
+            return Response(
+                {"error": "Both start_date and end_date are required. Use YYYY-MM-DD format."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return Response(
+                {"error": "Invalid date format. Use YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if start_date > end_date:
+            return Response(
+                {"error": "start_date must be less than or equal to end_date."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        print(f"Calculating date range profits from {start_date} to {end_date}")
+
+        # Use database transaction to ensure all updates are atomic
+        with db_transaction.atomic():
+            # Get all transactions within the date range
+            range_transactions = Transaction.objects.filter(
+                date_time__date__gte=start_date,
+                date_time__date__lte=end_date
+            ).order_by('date_time')
+
+            print(f"Found {range_transactions.count()} transactions in date range {start_date} to {end_date}")
+
+            # Reset profit values for this range's BUY/SELL transactions
+            range_transactions.filter(transaction_type__in=['BUY', 'SELL']).update(profit=0)
+            
+            # Handle 'OTHER' profit transactions - these have direct profit values
+            other_transactions = range_transactions.filter(transaction_type='OTHER')
+            other_profit = Decimal('0.00')
+
+            for tx in other_transactions:
+                try:
+                    # Set the profit value (should be the same as thb_amount)
+                    tx.profit = tx.thb_amount
+                    tx.save(update_fields=['profit'])
+                    other_profit += tx.profit
+                except Exception as tx_error:
+                    print(f"Error processing OTHER transaction {tx.id}: {str(tx_error)}")
+            
+            print(f"Total from 'OTHER' profit transactions in date range: {other_profit}")
+            
+            # Get BUY/SELL transactions for the date range
+            buysell_transactions = list(range_transactions.filter(
+                transaction_type__in=['BUY', 'SELL']
+            ).order_by('date_time'))
+            
+            print(f"Found {len(buysell_transactions)} BUY/SELL transactions for matching in date range")
+            
+            buy_sell_profit = Decimal('0.00')
+            profit_details = []
+            
+            if not buysell_transactions:
+                print(f"No BUY/SELL transactions found in date range")
+            else:
+                # Track remaining amounts for each transaction
+                remaining = {}
+                for tx in buysell_transactions:
+                    remaining[tx.id] = {
+                        'mmk_remaining': tx.mmk_amount,
+                        'transaction': tx,
+                        'profit': Decimal('0.00')
+                    }
+                
+                # Queue for transactions with remaining amounts
+                buy_queue = []
+                sell_queue = []
+                
+                # Process transactions in strict chronological order (within date range)
+                for tx in buysell_transactions:
+                    try:
+                        tx_type = tx.transaction_type
+                        tx_mmk = tx.mmk_amount
+                        tx_id = tx.id
+                        
+                        if tx_type == 'BUY':
+                            # Process any waiting SELL transactions first
+                            while sell_queue and tx_mmk > 0:
+                                try:
+                                    sell_id = sell_queue[0]
+                                    sell_tx = remaining[sell_id]['transaction']
+                                    sell_remaining = remaining[sell_id]['mmk_remaining']
+                                    
+                                    # Match the amounts
+                                    match_amount = min(sell_remaining, tx_mmk)
+                                    
+                                    # Calculate profit from this match
+                                    buy_rate = tx.rate
+                                    sell_rate = sell_tx.rate
+                                    
+                                    # Profit = (matched_mmk / sell_rate) - (matched_mmk / buy_rate)
+                                    match_amt_decimal = Decimal(str(match_amount))
+                                    buy_rate_decimal = Decimal(str(buy_rate))
+                                    sell_rate_decimal = Decimal(str(sell_rate))
+                                    
+                                    # Check for division by zero
+                                    if buy_rate_decimal == 0 or sell_rate_decimal == 0:
+                                        print(f"Division by zero detected for match between BUY #{tx_id} and SELL #{sell_id}")
+                                        sell_queue.pop(0)
+                                        continue
+                                    
+                                    profit = (match_amt_decimal / sell_rate_decimal) - (match_amt_decimal / buy_rate_decimal)
+                                    profit = profit.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+                                    
+                                    buy_sell_profit += profit
+                                    
+                                    # Add to profit details for breakdown
+                                    profit_details.append({
+                                        'buy_id': tx.id,
+                                        'buy_date': tx.date_time.strftime('%Y-%m-%d %H:%M'),
+                                        'buy_customer': tx.customer,
+                                        'sell_id': sell_tx.id,
+                                        'sell_date': sell_tx.date_time.strftime('%Y-%m-%d %H:%M'),
+                                        'sell_customer': sell_tx.customer,
+                                        'matched_mmk': float(match_amount),
+                                        'thb_buy': float(match_amount / buy_rate),
+                                        'thb_sell': float(match_amount / sell_rate),
+                                        'profit': float(profit),
+                                        'buy_rate': float(buy_rate),
+                                        'sell_rate': float(sell_rate)
+                                    })
+                                    
+                                    print(f"Matched {match_amount} MMK: BUY #{tx_id} with SELL #{sell_id}, profit: {profit}")
+                                    
+                                    # Update database profit values
+                                    if match_amount == sell_remaining:
+                                        # SELL is fully matched, attribute profit to SELL
+                                        sell_tx.profit += profit
+                                        sell_tx.save(update_fields=['profit'])
+                                        remaining[sell_id]['profit'] += profit
+                                        sell_queue.pop(0)
+                                    else:
+                                        # BUY is fully matched, attribute profit to BUY
+                                        tx.profit += profit
+                                        tx.save(update_fields=['profit'])
+                                        remaining[tx_id]['profit'] += profit
+                                    
+                                    # Update remaining amounts
+                                    remaining[sell_id]['mmk_remaining'] -= match_amount
+                                    tx_mmk -= match_amount
+                                except Exception as e:
+                                    print(f"Error processing BUY-SELL match: {str(e)}")
+                                    if sell_queue:
+                                        sell_queue.pop(0)
+                            
+                            # After processing all SELLs, check if there's remaining amount
+                            if tx_mmk > 0:
+                                remaining[tx_id]['mmk_remaining'] = tx_mmk
+                                if tx_id not in buy_queue:
+                                    buy_queue.append(tx_id)
+                        
+                        elif tx_type == 'SELL':
+                            # Process any waiting BUY transactions first
+                            while buy_queue and tx_mmk > 0:
+                                try:
+                                    buy_id = buy_queue[0]
+                                    buy_tx = remaining[buy_id]['transaction']
+                                    buy_remaining = remaining[buy_id]['mmk_remaining']
+                                    
+                                    # Match the amounts
+                                    match_amount = min(buy_remaining, tx_mmk)
+                                    
+                                    # Calculate profit from this match
+                                    buy_rate = buy_tx.rate
+                                    sell_rate = tx.rate
+                                    
+                                    match_amt_decimal = Decimal(str(match_amount))
+                                    buy_rate_decimal = Decimal(str(buy_rate))
+                                    sell_rate_decimal = Decimal(str(sell_rate))
+                                    
+                                    if buy_rate_decimal == 0 or sell_rate_decimal == 0:
+                                        print(f"Division by zero detected for match between BUY #{buy_id} and SELL #{tx_id}")
+                                        buy_queue.pop(0)
+                                        continue
+                                    
+                                    profit = (match_amt_decimal / sell_rate_decimal) - (match_amt_decimal / buy_rate_decimal)
+                                    profit = profit.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+                                    
+                                    buy_sell_profit += profit
+                                    
+                                    # Add to profit details for breakdown
+                                    profit_details.append({
+                                        'buy_id': buy_tx.id,
+                                        'buy_date': buy_tx.date_time.strftime('%Y-%m-%d %H:%M'),
+                                        'buy_customer': buy_tx.customer,
+                                        'sell_id': tx.id,
+                                        'sell_date': tx.date_time.strftime('%Y-%m-%d %H:%M'),
+                                        'sell_customer': tx.customer,
+                                        'matched_mmk': float(match_amount),
+                                        'thb_buy': float(match_amount / buy_rate),
+                                        'thb_sell': float(match_amount / sell_rate),
+                                        'profit': float(profit),
+                                        'buy_rate': float(buy_rate),
+                                        'sell_rate': float(sell_rate)
+                                    })
+                                    
+                                    print(f"Matched {match_amount} MMK: BUY #{buy_id} with SELL #{tx_id}, profit: {profit}")
+                                    
+                                    # Update database profit values
+                                    if match_amount == buy_remaining:
+                                        # BUY is fully matched, attribute profit to BUY
+                                        buy_tx.profit += profit
+                                        buy_tx.save(update_fields=['profit'])
+                                        remaining[buy_id]['profit'] += profit
+                                        buy_queue.pop(0)
+                                    else:
+                                        # SELL is fully matched, attribute profit to SELL
+                                        tx.profit += profit
+                                        tx.save(update_fields=['profit'])
+                                        remaining[tx_id]['profit'] += profit
+                                    
+                                    # Update remaining amounts
+                                    remaining[buy_id]['mmk_remaining'] -= match_amount
+                                    tx_mmk -= match_amount
+                                except Exception as e:
+                                    print(f"Error processing SELL-BUY match: {str(e)}")
+                                    if buy_queue:
+                                        buy_queue.pop(0)
+                            
+                            # After processing all BUYs, check if there's remaining amount
+                            if tx_mmk > 0:
+                                remaining[tx_id]['mmk_remaining'] = tx_mmk
+                                if tx_id not in sell_queue:
+                                    sell_queue.append(tx_id)
+                    
+                    except Exception as e:
+                        print(f"Error processing transaction {tx.id}: {str(e)}")
+                        continue
+
+            print(f"Date range profit calculation complete for {start_date} to {end_date}")
+            print(f"Buy/Sell profit: {buy_sell_profit}, Other profit: {other_profit}")
+
+        # Return comprehensive result
+        return Response({
+            'start_date': start_date.strftime('%Y-%m-%d'),
+            'end_date': end_date.strftime('%Y-%m-%d'),
+            'buy_sell_profit': float(buy_sell_profit),
+            'other_profit': float(other_profit),
+            'total_profit': float(buy_sell_profit + other_profit),
+            'transaction_count': range_transactions.count(),
+            'profit_details': profit_details
+        })
+
+    except Exception as e:
+        print(f"Error calculating date range profits: {str(e)}")
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 class DailyProfitViewSet(viewsets.ModelViewSet):
     queryset = DailyProfit.objects.all()
     serializer_class = DailyProfitSerializer

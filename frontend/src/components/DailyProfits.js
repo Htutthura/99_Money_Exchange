@@ -118,6 +118,8 @@ const DailyProfits = () => {
         start_date: start,
         end_date: end,
         timestamp: new Date().getTime(),
+        page_size: 10000, // Request all transactions without pagination limit
+        page: 1
       };
       const response = await axios.get(`${API_BASE_URL}list/`, {
         params,
@@ -189,6 +191,8 @@ const DailyProfits = () => {
         start_date: start,
         end_date: end,
         timestamp: new Date().getTime(),
+        page_size: 10000, // Request all transactions without pagination limit
+        page: 1
       };
       const response = await axios.get(`${API_BASE_URL}list/`, {
         params,
@@ -231,6 +235,7 @@ const DailyProfits = () => {
         start = formatDateForAPI(startDate);
         end = formatDateForAPI(endDate);
       }
+
       let profitsArr = [];
       let summaryTotals = {
         totalProfit: 0,
@@ -241,15 +246,13 @@ const DailyProfits = () => {
         sellCount: 0,
       };
       let breakdownAll = [];
-      const dates = getDatesInRange(start, end);
-      for (let dateObj of dates) {
-        const dateStr = formatDateForAPI(dateObj);
-        
-        // Use the backend daily profits calculation endpoint
+
+      if (dateMode === 'single') {
+        // For single date, use the existing single-date calculation
         try {
-          const dailyResult = await calculateDailyProfits(dateObj);
+          const dailyResult = await calculateDailyProfits(singleDate);
           profitsArr.push({
-            date: dateStr,
+            date: start,
             total_profit: dailyResult.total_profit || 0,
             buy_sell_profit: dailyResult.buy_sell_profit || 0,
             other_profit: dailyResult.other_profit || 0,
@@ -264,7 +267,7 @@ const DailyProfits = () => {
           summaryTotals.transactionCount += (dailyResult.transactionCount || 0);
           
           // Get transaction details for volume and breakdown calculations
-          const transactions = await fetchTransactionsForRange(dateStr, dateStr);
+          const transactions = await fetchTransactionsForRange(start, start);
           const calc = calculateProfitsFromTransactions(transactions);
           
           // Update the profit entry with volume and count data
@@ -273,24 +276,24 @@ const DailyProfits = () => {
           lastEntry.mmkVolume = calc.mmkVolume;
           lastEntry.buyCount = calc.buyCount;
           lastEntry.sellCount = calc.sellCount;
-          lastEntry.transactionCount = calc.transactionCount;
+          lastEntry.transactionCount = calc.transactionCount; // Use actual transaction count from fetched data
           
           summaryTotals.thbVolume += calc.thbVolume;
           summaryTotals.mmkVolume += calc.mmkVolume;
           summaryTotals.buyCount += calc.buyCount;
           summaryTotals.sellCount += calc.sellCount;
-          summaryTotals.transactionCount = Math.max(summaryTotals.transactionCount, calc.transactionCount);
-          
+          summaryTotals.transactionCount = calc.transactionCount; // Use actual count
+
           if (calc.matched.length > 0) {
-            breakdownAll = breakdownAll.concat(calc.matched.map(m => ({ ...m, date: dateStr })));
+            breakdownAll = breakdownAll.concat(calc.matched.map(m => ({ ...m, date: start })));
           }
         } catch (error) {
-          console.error(`Error calculating daily profits for ${dateStr}:`, error);
+          console.error(`Error calculating daily profits for ${start}:`, error);
           // Fall back to manual calculation for this date
-          const transactions = await fetchTransactionsForRange(dateStr, dateStr);
+          const transactions = await fetchTransactionsForRange(start, start);
           const calc = calculateProfitsFromTransactions(transactions);
           profitsArr.push({
-            date: dateStr,
+            date: start,
             total_profit: calc.totalProfit,
             buy_sell_profit: calc.totalProfit - calc.otherProfit,
             other_profit: calc.otherProfit,
@@ -309,10 +312,153 @@ const DailyProfits = () => {
           summaryTotals.sellCount += calc.sellCount;
           
           if (calc.matched.length > 0) {
-            breakdownAll = breakdownAll.concat(calc.matched.map(m => ({ ...m, date: dateStr })));
+            breakdownAll = breakdownAll.concat(calc.matched.map(m => ({ ...m, date: start })));
+          }
+        }
+      } else {
+        // For date range, use the new date range endpoint for better performance
+        try {
+          console.log(`Calculating date range profits from ${start} to ${end}`);
+          const response = await fetch(`${API_BASE_URL}daily-profits/calculate-range/?start_date=${start}&end_date=${end}&timestamp=${new Date().getTime()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            credentials: 'include',
+          });
+
+          if (!response.ok) {
+            throw new Error(`Date range calculation failed: ${response.status}`);
+          }
+
+          const rangeResult = await response.json();
+          
+          // Create a single entry for the date range
+          profitsArr.push({
+            date: `${start} to ${end}`,
+            total_profit: rangeResult.total_profit || 0,
+            buy_sell_profit: rangeResult.buy_sell_profit || 0,
+            other_profit: rangeResult.other_profit || 0,
+            transactionCount: rangeResult.transaction_count || 0,
+            thbVolume: 0, // We'll calculate these from transactions
+            mmkVolume: 0,
+            buyCount: 0,
+            sellCount: 0,
+          });
+          
+          summaryTotals.totalProfit = rangeResult.total_profit || 0;
+          summaryTotals.transactionCount = rangeResult.transaction_count || 0;
+          
+          // Get transaction details for volume and count calculations
+          const transactions = await fetchTransactionsForRange(start, end);
+          const calc = calculateProfitsFromTransactions(transactions);
+          
+          // Update the profit entry with volume and count data
+          const lastEntry = profitsArr[profitsArr.length - 1];
+          lastEntry.thbVolume = calc.thbVolume;
+          lastEntry.mmkVolume = calc.mmkVolume;
+          lastEntry.buyCount = calc.buyCount;
+          lastEntry.sellCount = calc.sellCount;
+          lastEntry.transactionCount = calc.transactionCount; // Use actual transaction count
+          
+          summaryTotals.thbVolume = calc.thbVolume;
+          summaryTotals.mmkVolume = calc.mmkVolume;
+          summaryTotals.buyCount = calc.buyCount;
+          summaryTotals.sellCount = calc.sellCount;
+          summaryTotals.transactionCount = calc.transactionCount; // Use actual count
+
+          // Use profit details from the backend response
+          if (rangeResult.profit_details && rangeResult.profit_details.length > 0) {
+            breakdownAll = rangeResult.profit_details.map(detail => ({
+              buy_customer: detail.buy_customer,
+              sell_customer: detail.sell_customer,
+              buy_time: detail.buy_date,
+              sell_time: detail.sell_date,
+              matched_mmk: detail.matched_mmk,
+              buy_rate: detail.buy_rate,
+              sell_rate: detail.sell_rate,
+              matched_thb: detail.thb_buy,
+              profit: detail.profit,
+              date: `${start} to ${end}`
+            }));
+          }
+        } catch (error) {
+          console.error(`Error calculating date range profits:`, error);
+          // Fall back to day-by-day calculation
+          const dates = getDatesInRange(start, end);
+          for (let dateObj of dates) {
+            const dateStr = formatDateForAPI(dateObj);
+            
+            try {
+              const dailyResult = await calculateDailyProfits(dateObj);
+              profitsArr.push({
+                date: dateStr,
+                total_profit: dailyResult.total_profit || 0,
+                buy_sell_profit: dailyResult.buy_sell_profit || 0,
+                other_profit: dailyResult.other_profit || 0,
+                transactionCount: dailyResult.transactionCount || 0,
+                thbVolume: 0,
+                mmkVolume: 0,
+                buyCount: 0,
+                sellCount: 0,
+              });
+              
+              summaryTotals.totalProfit += (dailyResult.total_profit || 0);
+              summaryTotals.transactionCount += (dailyResult.transactionCount || 0);
+              
+              // Get transaction details for volume and breakdown calculations
+              const transactions = await fetchTransactionsForRange(dateStr, dateStr);
+              const calc = calculateProfitsFromTransactions(transactions);
+              
+              // Update the profit entry with volume and count data
+              const lastEntry = profitsArr[profitsArr.length - 1];
+              lastEntry.thbVolume = calc.thbVolume;
+              lastEntry.mmkVolume = calc.mmkVolume;
+              lastEntry.buyCount = calc.buyCount;
+              lastEntry.sellCount = calc.sellCount;
+              lastEntry.transactionCount = calc.transactionCount; // Use actual count
+              
+              summaryTotals.thbVolume += calc.thbVolume;
+              summaryTotals.mmkVolume += calc.mmkVolume;
+              summaryTotals.buyCount += calc.buyCount;
+              summaryTotals.sellCount += calc.sellCount;
+              
+              if (calc.matched.length > 0) {
+                breakdownAll = breakdownAll.concat(calc.matched.map(m => ({ ...m, date: dateStr })));
+              }
+            } catch (dailyError) {
+              console.error(`Error calculating daily profits for ${dateStr}:`, dailyError);
+              // Fall back to manual calculation for this date
+              const transactions = await fetchTransactionsForRange(dateStr, dateStr);
+              const calc = calculateProfitsFromTransactions(transactions);
+              profitsArr.push({
+                date: dateStr,
+                total_profit: calc.totalProfit,
+                buy_sell_profit: calc.totalProfit - calc.otherProfit,
+                other_profit: calc.otherProfit,
+                transactionCount: calc.transactionCount,
+                thbVolume: calc.thbVolume,
+                mmkVolume: calc.mmkVolume,
+                buyCount: calc.buyCount,
+                sellCount: calc.sellCount,
+              });
+              
+              summaryTotals.totalProfit += calc.totalProfit;
+              summaryTotals.transactionCount += calc.transactionCount;
+              summaryTotals.thbVolume += calc.thbVolume;
+              summaryTotals.mmkVolume += calc.mmkVolume;
+              summaryTotals.buyCount += calc.buyCount;
+              summaryTotals.sellCount += calc.sellCount;
+              
+              if (calc.matched.length > 0) {
+                breakdownAll = breakdownAll.concat(calc.matched.map(m => ({ ...m, date: dateStr })));
+              }
+            }
           }
         }
       }
+
       setProfits(profitsArr);
       setSummary(summaryTotals);
       setBreakdown(breakdownAll);

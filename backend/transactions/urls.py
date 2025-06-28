@@ -65,4 +65,7 @@ urlpatterns = [
     
     # Add daily profits calculation endpoint
     path('daily-profits/calculate/', views.calculate_daily_profits, name='calculate-daily-profits'),
+    
+    # Add date range profits calculation endpoint
+    path('daily-profits/calculate-range/', views.calculate_date_range_profits, name='calculate-date-range-profits'),
 ] 
