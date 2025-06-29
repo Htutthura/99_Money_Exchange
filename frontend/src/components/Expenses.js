@@ -295,6 +295,30 @@ const Expenses = () => {
     }
   };
 
+  const expenseStats = React.useMemo(() => {
+    if (!expenses || expenses.length === 0) {
+      return {
+        total: 0,
+        count: 0,
+        average: 0,
+        topCategory: 'N/A',
+      };
+    }
+    const total = expenses.reduce((acc, curr) => acc + parseFloat(curr.amount_thb || 0), 0);
+    const count = expenses.length;
+    const average = total / count;
+    
+    const categoryTotals = expenses.reduce((acc, curr) => {
+      const category = curr.expense_type_name || 'Uncategorized';
+      acc[category] = (acc[category] || 0) + parseFloat(curr.amount_thb || 0);
+      return acc;
+    }, {});
+
+    const topCategory = Object.keys(categoryTotals).reduce((a, b) => categoryTotals[a] > categoryTotals[b] ? a : b, 'N/A');
+
+    return { total, count, average, topCategory };
+  }, [expenses]);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box sx={{ p: 3 }}>
@@ -340,15 +364,15 @@ const Expenses = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
+              <TextField name="remarks" label="Remarks" fullWidth value={formData.remarks} onChange={handleInputChange} />
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <DatePicker
                 label="Date"
                 value={formData.date}
                 onChange={handleDateChange}
                 renderInput={(params) => <TextField {...params} fullWidth />}
               />
-            </Grid>
-            <Grid item xs={12}>
-               <TextField name="remarks" label="Remarks" fullWidth value={formData.remarks} onChange={handleInputChange} />
             </Grid>
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button type="submit" variant="contained" disabled={loading}>Add Expense</Button>
@@ -395,6 +419,29 @@ const Expenses = () => {
             </Paper>
           </Grid>
         </Grid>
+
+        {/* Expense Dashboard */}
+        <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>Expense Dashboard</Typography>
+            <Grid container spacing={3} textAlign="center">
+                <Grid item xs={6} sm={3}>
+                    <Typography variant="h5">{expenseStats.total.toLocaleString('en-US', { style: 'currency', currency: 'THB' })}</Typography>
+                    <Typography variant="body2" color="text.secondary">Total Expenses</Typography>
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                    <Typography variant="h5">{expenseStats.count}</Typography>
+                    <Typography variant="body2" color="text.secondary">Number of Expenses</Typography>
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                    <Typography variant="h5">{expenseStats.average.toLocaleString('en-US', { style: 'currency', currency: 'THB' })}</Typography>
+                    <Typography variant="body2" color="text.secondary">Average Expense</Typography>
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                    <Typography variant="h5">{expenseStats.topCategory}</Typography>
+                    <Typography variant="body2" color="text.secondary">Top Spending Category</Typography>
+                </Grid>
+            </Grid>
+        </Paper>
         
         {/* Expenses Table */}
         <Paper sx={{ p: 2 }}>
