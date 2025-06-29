@@ -386,24 +386,26 @@ const Expenses = () => {
         </Paper>
 
         {/* Filters and Charts */}
-        <Grid container spacing={3} sx={{ mb: 3 }} alignItems="stretch">
+        <Grid container spacing={3} sx={{ mb: 3 }}>
           <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <Typography variant="h6">Filter Expenses</Typography>
-              <Stack direction="row" spacing={2} sx={{ mt: 2, alignItems: 'center' }}>
-                <FormControlLabel control={<Switch checked={dateMode === 'range'} onChange={(e) => setDateMode(e.target.checked ? 'range' : 'single')} />} label="Date Range" />
-                {dateMode === 'single' ? (
-                  <DatePicker label="Select Date" value={singleDate} onChange={setSingleDate} renderInput={(params) => <TextField {...params} />} />
-                ) : (
-                  <>
-                    <DatePicker label="Start Date" value={startDate} onChange={setStartDate} renderInput={(params) => <TextField {...params} />} />
-                    <DatePicker label="End Date" value={endDate} onChange={setEndDate} renderInput={(params) => <TextField {...params} />} />
-                  </>
-                )}
-              </Stack>
-              <Stack direction="row" spacing={2} sx={{ mt: 2, flexGrow: 1, alignItems: 'center' }}>
+            <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6">Filter Expenses</Typography>
+                <Stack direction="row" spacing={2} sx={{ mt: 2, alignItems: 'center' }}>
+                  <FormControlLabel control={<Switch checked={dateMode === 'range'} onChange={(e) => setDateMode(e.target.checked ? 'range' : 'single')} />} label="Date Range" />
+                  {dateMode === 'single' ? (
+                    <DatePicker label="Select Date" value={singleDate} onChange={setSingleDate} renderInput={(params) => <TextField {...params} />} />
+                  ) : (
+                    <>
+                      <DatePicker label="Start Date" value={startDate} onChange={setStartDate} renderInput={(params) => <TextField {...params} />} />
+                      <DatePicker label="End Date" value={endDate} onChange={setEndDate} renderInput={(params) => <TextField {...params} />} />
+                    </>
+                  )}
+                </Stack>
+              </Box>
+              <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
                 {quickRanges.map(range => (
-                  <Button key={range.label} onClick={() => handleQuickRange(range.getRange)} variant="outlined" sx={{ flexGrow: 1, height: '100%' }}>
+                  <Button key={range.label} onClick={() => handleQuickRange(range.getRange)} variant="outlined" sx={{ flexGrow: 1, py: 1.5 }}>
                     {range.label}
                   </Button>
                 ))}
