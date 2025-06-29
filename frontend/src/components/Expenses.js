@@ -386,11 +386,11 @@ const Expenses = () => {
         </Paper>
 
         {/* Filters and Charts */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid container spacing={3} sx={{ mb: 3 }} alignItems="stretch">
           <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 2 }}>
+            <Paper sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
               <Typography variant="h6">Filter Expenses</Typography>
-              <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+              <Stack direction="row" spacing={2} sx={{ mt: 2, alignItems: 'center' }}>
                 <FormControlLabel control={<Switch checked={dateMode === 'range'} onChange={(e) => setDateMode(e.target.checked ? 'range' : 'single')} />} label="Date Range" />
                 {dateMode === 'single' ? (
                   <DatePicker label="Select Date" value={singleDate} onChange={setSingleDate} renderInput={(params) => <TextField {...params} />} />
@@ -401,9 +401,11 @@ const Expenses = () => {
                   </>
                 )}
               </Stack>
-              <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+              <Stack direction="row" spacing={2} sx={{ mt: 2, flexGrow: 1, alignItems: 'center' }}>
                 {quickRanges.map(range => (
-                  <Button key={range.label} onClick={() => handleQuickRange(range.getRange)} size="small">{range.label}</Button>
+                  <Button key={range.label} onClick={() => handleQuickRange(range.getRange)} variant="outlined" sx={{ flexGrow: 1, height: '100%' }}>
+                    {range.label}
+                  </Button>
                 ))}
               </Stack>
             </Paper>
