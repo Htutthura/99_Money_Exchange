@@ -80,50 +80,27 @@ class ExpenseTypeSerializer(serializers.ModelSerializer):
 
 class ExpenseSerializer(serializers.ModelSerializer):
     expense_type_name = serializers.CharField(source='expense_type.name', read_only=True)
-    expense_type_details = ExpenseTypeSerializer(source='expense_type', read_only=True)
-    amount_thb = serializers.SerializerMethodField()
-    amount_thb_rate_info = serializers.SerializerMethodField()
+    amount_thb = serializers.DecimalField(source='amount', max_digits=12, decimal_places=2, read_only=True)
 
     class Meta:
         model = Expense
         fields = [
-            'id', 'expense_type', 'expense_type_name', 'expense_type_details',
-            'amount', 'amount_thb', 'amount_thb_rate_info', 'description', 'remarks', 'date', 'created_at', 'updated_at'
+            'id', 'expense_type', 'expense_type_name', 'description', 
+            'remarks', 'date', 'amount', 'amount_thb'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'amount_thb']
 
-    def get_amount_thb(self, obj):
-        rate = self._get_exchange_rate_for_expense(obj)
-        if rate and obj.amount is not None:
-            return obj.amount * rate.rate
-        return None
-
-    def get_amount_thb_rate_info(self, obj):
-        rate = self._get_exchange_rate_for_expense(obj)
-        if not rate:
-            return "No exchange rate available"
-        if rate.date == obj.date:
-            return f"Rate: {rate.rate} on {rate.date}"
-        return f"Using rate from {rate.date} ({rate.rate}) as no rate exists for {obj.date}"
-
-    def _get_exchange_rate_for_expense(self, obj):
-        # Cache the rate on the object to avoid redundant lookups
-        if hasattr(self, '_cached_rate') and self._cached_rate and self._cached_rate.date == obj.date:
-             return self._cached_rate
-
-        # Try to get the rate for the specific date of the expense
-        rate = DailyExchangeRate.objects.filter(date=obj.date).first()
-        if rate:
-            self._cached_rate = rate
-            return rate
-
-        # If no rate is found for that day, find the most recent one
-        most_recent_rate = DailyExchangeRate.objects.filter(date__lte=obj.date).order_by('-date').first()
-        if most_recent_rate:
-            self._cached_rate = most_recent_rate
-            return most_recent_rate
-            
-        return None
+    def to_representation(self, instance):
+        """
+        Customize the output of the serializer.
+        'amount' is used for writing (creating/updating) expenses,
+        'amount_thb' is used for reading (displaying) them.
+        """
+        representation = super().to_representation(instance)
+        # We don't need to show both 'amount' and 'amount_thb' in the API response.
+        # Let's just show 'amount_thb' to be clear.
+        representation.pop('amount', None)
+        return representation
 
     def create(self, validated_data):
         # Get the expense_type instance
