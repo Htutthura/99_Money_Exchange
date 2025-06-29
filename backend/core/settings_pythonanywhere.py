@@ -2,6 +2,8 @@ from .settings import *
 import os
 
 # PythonAnywhere specific settings
+ROOT_URLCONF = 'core.urls'
+SECRET_KEY = os.environ.get('SECRET_KEY') # Make sure to set this in PythonAnywhere environment
 DEBUG = False
 ALLOWED_HOSTS = [
     '99moneyexchange.pythonanywhere.com',  # Added your PythonAnywhere domain
