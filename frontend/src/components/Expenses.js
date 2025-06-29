@@ -24,13 +24,15 @@ import {
   Stack,
   Alert,
   FormHelperText,
-  IconButton
+  IconButton,
+  Tooltip,
+  Info as InfoIcon
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { subDays, startOfWeek, startOfMonth } from 'date-fns';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -50,7 +52,7 @@ const quickRanges = [
   { label: 'This Month', getRange: () => [startOfMonth(new Date()), new Date()] },
 ];
 
-  const API_URL = 'https://99moneyexchange.pythonanywhere.com/api/transactions/expenses/';
+const API_URL = 'https://99moneyexchange.pythonanywhere.com/api/transactions/expenses/';
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
@@ -301,17 +303,20 @@ const Expenses = () => {
   };
 
   const getChartData = () => {
-    if (!Array.isArray(expenses)) return [];
-    
-    const categoryTotals = expenses.reduce((acc, expense) => {
-      const typeName = expense.expense_type_name || 'Unknown';
-      acc[typeName] = (acc[typeName] || 0) + Number(expense.amount);
+    if (!Array.isArray(expenses) || expenses.length === 0) return [];
+    const grouped = expenses.reduce((acc, expense) => {
+      const typeName = expense.expense_type_name || 'Uncategorized';
+      if (!acc[typeName]) {
+        acc[typeName] = 0;
+      }
+      acc[typeName] += parseFloat(expense.amount_thb || 0);
       return acc;
     }, {});
 
-    return Object.entries(categoryTotals).map(([name, value]) => ({
+    return Object.keys(grouped).map((name, index) => ({
       name,
-      value
+      value: grouped[name],
+      fill: COLORS[index % COLORS.length],
     }));
   };
 
@@ -451,14 +456,14 @@ const Expenses = () => {
                   <Grid item xs={12} md={6}>
                     <TextField
                       fullWidth
-                      label="Amount"
+                      label="Amount (MMK)"
                       name="amount"
                       type="number"
                       value={formData.amount}
                       onChange={handleInputChange}
                       required
                       error={formTouched && (!formData.amount || formData.amount <= 0)}
-                      helperText={formTouched && (!formData.amount || formData.amount <= 0) ? "Please enter a valid amount" : "Expense amount (MMK or THB)"}
+                      helperText={formTouched && (!formData.amount || formData.amount <= 0) ? "Please enter a valid amount" : "Expense amount in MMK"}
                     />
                   </Grid>
                   <Grid item xs={12} md={6}>
@@ -614,15 +619,17 @@ const Expenses = () => {
                 </Typography>
                 <Grid container spacing={2}>
                   {/* Total Expenses */}
-                  <Grid item xs={12} sm={6}>
-                    <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, bgcolor: '#fff', boxShadow: 1, borderRadius: 2 }}>
-                      <AttachMoneyIcon color="success" fontSize="large" />
-                      <Box>
-                        <Typography variant="subtitle2" color="text.secondary">Total Expenses</Typography>
-                        <Typography variant="h6" color="text.primary" sx={{ fontWeight: 700 }}>
-                          {expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0).toLocaleString()}
-                        </Typography>
-                      </Box>
+                  <Grid item xs={12} md={4}>
+                    <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center' }}>
+                      <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
+                        <AttachMoneyIcon sx={{ mr: 1 }} /> Total Expenses
+                      </Typography>
+                      <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                        {Array.isArray(expenses) ? expenses.reduce((acc, curr) => acc + parseFloat(curr.amount_thb || 0), 0).toLocaleString('en-US', { style: 'currency', currency: 'THB' }) : '0.00'}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        For selected date range
+                      </Typography>
                     </Paper>
                   </Grid>
                   {/* Number of Expenses */}
@@ -705,20 +712,29 @@ const Expenses = () => {
                       <TableRow>
                         <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
                         <TableCell sx={{ fontWeight: 700 }}>Type</TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>Amount</TableCell>
                         <TableCell sx={{ fontWeight: 700 }}>Description</TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>Remarks</TableCell>
+                        <TableCell align="right">Amount (MMK)</TableCell>
+                        <TableCell align="right">Amount (THB)</TableCell>
                         <TableCell sx={{ fontWeight: 700 }}>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {Array.isArray(expenses) && expenses.map((expense, idx) => (
-                        <TableRow key={expense.id} sx={{ bgcolor: idx % 2 === 0 ? '#f9fbfc' : '#fff' }}>
+                      {Array.isArray(expenses) && expenses.map((expense) => (
+                        <TableRow key={expense.id}>
                           <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
                           <TableCell>{expense.expense_type_name}</TableCell>
-                          <TableCell>{expense.amount} MMK</TableCell>
                           <TableCell>{expense.description}</TableCell>
-                          <TableCell>{expense.remarks}</TableCell>
+                          <TableCell align="right">{parseFloat(expense.amount).toLocaleString()}</TableCell>
+                          <TableCell align="right">
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                              {expense.amount_thb ? parseFloat(expense.amount_thb).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'N/A'}
+                              {expense.amount_thb_rate_info && (
+                                <Tooltip title={expense.amount_thb_rate_info} arrow>
+                                  <InfoIcon sx={{ ml: 0.5, fontSize: '1rem', color: 'text.secondary' }} />
+                                </Tooltip>
+                              )}
+                            </Box>
+                          </TableCell>
                           <TableCell>
                             <IconButton onClick={() => handleEditClick(expense)} size="small" color="primary"><EditIcon /></IconButton>
                             <IconButton onClick={() => handleDeleteClick(expense)} size="small" color="error"><DeleteIcon /></IconButton>
