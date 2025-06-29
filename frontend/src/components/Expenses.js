@@ -38,6 +38,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import InfoIcon from '@mui/icons-material/Info';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import CategoryIcon from '@mui/icons-material/Category';
 import axios from 'axios';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
@@ -374,7 +378,7 @@ const Expenses = () => {
                 renderInput={(params) => <TextField {...params} fullWidth />}
               />
             </Grid>
-            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Grid item xs={12} sm={6} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
               <Button type="submit" variant="contained" disabled={loading}>Add Expense</Button>
             </Grid>
           </Grid>
@@ -421,24 +425,44 @@ const Expenses = () => {
         </Grid>
 
         {/* Expense Dashboard */}
-        <Paper sx={{ p: 3, mb: 3 }}>
-            <Typography variant="h6" gutterBottom>Expense Dashboard</Typography>
-            <Grid container spacing={3} textAlign="center">
-                <Grid item xs={6} sm={3}>
-                    <Typography variant="h5">{expenseStats.total.toLocaleString('en-US', { style: 'currency', currency: 'THB' })}</Typography>
-                    <Typography variant="body2" color="text.secondary">Total Expenses</Typography>
+        <Paper sx={{ p: 3, mb: 3, borderRadius: 2, boxShadow: 3 }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>Dashboard</Typography>
+            <Grid container spacing={3}>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, borderRadius: 2 }}>
+                        <MonetizationOnIcon color="success" sx={{ fontSize: 40 }} />
+                        <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{expenseStats.total.toLocaleString('en-US', { style: 'currency', currency: 'THB' })}</Typography>
+                            <Typography variant="body2" color="text.secondary">Total Expenses</Typography>
+                        </Box>
+                    </Paper>
                 </Grid>
-                <Grid item xs={6} sm={3}>
-                    <Typography variant="h5">{expenseStats.count}</Typography>
-                    <Typography variant="body2" color="text.secondary">Number of Expenses</Typography>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, borderRadius: 2 }}>
+                        <ShoppingCartIcon color="primary" sx={{ fontSize: 40 }} />
+                        <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{expenseStats.count}</Typography>
+                            <Typography variant="body2" color="text.secondary">Number of Expenses</Typography>
+                        </Box>
+                    </Paper>
                 </Grid>
-                <Grid item xs={6} sm={3}>
-                    <Typography variant="h5">{expenseStats.average.toLocaleString('en-US', { style: 'currency', currency: 'THB' })}</Typography>
-                    <Typography variant="body2" color="text.secondary">Average Expense</Typography>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, borderRadius: 2 }}>
+                        <FunctionsIcon color="warning" sx={{ fontSize: 40 }} />
+                        <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{expenseStats.average.toLocaleString('en-US', { style: 'currency', currency: 'THB' })}</Typography>
+                            <Typography variant="body2" color="text.secondary">Average Expense</Typography>
+                        </Box>
+                    </Paper>
                 </Grid>
-                <Grid item xs={6} sm={3}>
-                    <Typography variant="h5">{expenseStats.topCategory}</Typography>
-                    <Typography variant="body2" color="text.secondary">Top Spending Category</Typography>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, borderRadius: 2 }}>
+                        <CategoryIcon color="info" sx={{ fontSize: 40 }} />
+                        <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{expenseStats.topCategory}</Typography>
+                            <Typography variant="body2" color="text.secondary">Top Category</Typography>
+                        </Box>
+                    </Paper>
                 </Grid>
             </Grid>
         </Paper>
