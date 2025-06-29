@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
-import { Container, Typography, CssBaseline, Box, AppBar, Toolbar, Tabs, Tab, CircularProgress, Snackbar, Alert, Button, Avatar, Menu, MenuItem, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, useMediaQuery } from '@mui/material';
+import { Container, Typography, CssBaseline, Box, AppBar, Toolbar, Tabs, Tab, CircularProgress, Snackbar, Alert, Button, Avatar, Menu, MenuItem, Divider, useMediaQuery } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { LogoutOutlined, Settings, Menu as MenuIcon, AccountBalanceWallet, TrendingUp, Dashboard as DashboardIcon, Receipt, PieChart, Money } from '@mui/icons-material';
+import { LogoutOutlined, Settings } from '@mui/icons-material';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './components/Login';
 import ChangePassword from './components/ChangePassword';
@@ -11,6 +11,7 @@ import OtherProfits from './components/OtherProfits';
 import BankBalances from './components/BankBalances';
 import DailyProfits from './components/DailyProfits';
 import Expenses from './components/Expenses';
+import BottomNavigationBar from './components/BottomNavigationBar';
 
 // Create a custom theme with 99 Money Exchange brand colors
 const globalTheme = createTheme({
@@ -161,104 +162,6 @@ const UserMenu = () => {
   );
 };
 
-// Mobile navigation component
-const MobileNavigation = ({ currentTab, onTabChange, tabItems }) => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
-  };
-
-  const handleTabSelect = (index) => {
-    onTabChange(null, index);
-    setDrawerOpen(false);
-  };
-
-  return (
-    <>
-      <IconButton
-        color="inherit"
-        aria-label="open drawer"
-        onClick={handleDrawerToggle}
-        sx={{ mr: 2 }}
-      >
-        <MenuIcon />
-      </IconButton>
-      <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
-        {tabItems[currentTab]?.label}
-      </Typography>
-      <Drawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={handleDrawerToggle}
-        sx={{
-          '& .MuiDrawer-paper': {
-            width: 280,
-            boxSizing: 'border-box',
-            backgroundColor: '#0B1C1C',
-            color: 'white',
-          },
-        }}
-      >
-        <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          <Box
-            component="img"
-            src="/99money_logo_new.jpg"
-            alt="99 Money Exchange Logo"
-            sx={{ 
-              height: 60,
-              mb: 1,
-              display: 'block'
-            }}
-          />
-          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#00FF7F' }}>
-            99 Money Exchange
-          </Typography>
-        </Box>
-        <List sx={{ pt: 2 }}>
-          {tabItems.map((item, index) => (
-            <ListItem key={index} disablePadding>
-              <ListItemButton
-                selected={currentTab === index}
-                onClick={() => handleTabSelect(index)}
-                sx={{
-                  mx: 1,
-                  borderRadius: 2,
-                  '&.Mui-selected': {
-                    backgroundColor: 'rgba(0, 255, 127, 0.2)',
-                    '& .MuiListItemIcon-root': {
-                      color: '#00FF7F',
-                    },
-                    '& .MuiListItemText-primary': {
-                      color: '#00FF7F',
-                      fontWeight: 'bold',
-                    },
-                  },
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText 
-                  primary={item.label}
-                  sx={{
-                    '& .MuiListItemText-primary': {
-                      fontSize: '0.95rem',
-                    },
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-    </>
-  );
-};
-
 // Main application component
 const MainApp = () => {
   const [currentTab, setCurrentTab] = useState(0);
@@ -271,15 +174,7 @@ const MainApp = () => {
     setCurrentTab(newValue);
   };
 
-  // Tab items with icons for mobile navigation
-  const tabItems = [
-    { label: 'Transactions', icon: <Receipt /> },
-    { label: 'Other Profits', icon: <Money /> },
-    { label: 'Balances', icon: <AccountBalanceWallet /> },
-    { label: 'Daily Profits', icon: <TrendingUp /> },
-    { label: 'Dashboard', icon: <DashboardIcon /> },
-    { label: 'Expenses', icon: <PieChart /> },
-  ];
+
 
   // Function to render the current tab component
   const renderCurrentTab = () => {
@@ -351,13 +246,22 @@ const MainApp = () => {
       >
         <Toolbar sx={{ py: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {isMobile ? (
-            // Mobile Layout
+            // Mobile Layout - Simplified header
             <>
-              <MobileNavigation 
-                currentTab={currentTab}
-                onTabChange={handleTabChange}
-                tabItems={tabItems}
-              />
+              <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                <Box
+                  component="img"
+                  src="/99money_logo_new.jpg"
+                  alt="99 Money Exchange Logo"
+                  sx={{ 
+                    height: 50,
+                    mr: 2
+                  }}
+                />
+                <Typography variant="h6" component="h1" sx={{ fontWeight: 'bold', color: 'white' }}>
+                  99 Money Exchange
+                </Typography>
+              </Box>
               <UserMenu />
             </>
           ) : (
@@ -414,11 +318,23 @@ const MainApp = () => {
           )}
         </Toolbar>
       </AppBar>
-      <Container maxWidth="lg" sx={{ paddingTop: isMobile ? '80px' : '130px' }}>
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          paddingTop: isMobile ? '80px' : '130px',
+          paddingBottom: isMobile ? '90px' : '20px', // Add bottom padding for mobile bottom nav
+        }}
+      >
         <Box sx={{ mt: 2, mb: 6 }}>
           {renderCurrentTab()}
         </Box>
       </Container>
+      
+      {/* Bottom Navigation for Mobile */}
+      <BottomNavigationBar 
+        currentTab={currentTab}
+        onTabChange={handleTabChange}
+      />
       <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
         <Alert onClose={() => setError(null)} severity="error">
           {error}
