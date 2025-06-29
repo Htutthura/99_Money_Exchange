@@ -304,7 +304,7 @@ const Expenses = () => {
         <Paper sx={{ p: 3, mb: 3 }}>
           <Typography variant="h6" gutterBottom>Add New Expense</Typography>
           <Grid container spacing={2} component="form" onSubmit={handleSubmit}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth error={formTouched && !formData.type}>
                 <InputLabel>Type</InputLabel>
                 <Select name="type" value={formData.type} label="Type" onChange={handleInputChange}>
@@ -316,7 +316,7 @@ const Expenses = () => {
                 {formTouched && !formData.type && <FormHelperText>Required</FormHelperText>}
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 name="amount"
                 label="Amount (THB)"
@@ -328,7 +328,7 @@ const Expenses = () => {
                 helperText={formTouched && (!formData.amount || formData.amount <= 0) ? "Required" : ""}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 name="description"
                 label="Description"
@@ -339,7 +339,7 @@ const Expenses = () => {
                 helperText={formTouched && !formData.description ? "Required" : ""}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6}>
               <DatePicker
                 label="Date"
                 value={formData.date}
@@ -350,7 +350,7 @@ const Expenses = () => {
             <Grid item xs={12}>
                <TextField name="remarks" label="Remarks" fullWidth value={formData.remarks} onChange={handleInputChange} />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button type="submit" variant="contained" disabled={loading}>Add Expense</Button>
             </Grid>
           </Grid>
@@ -412,8 +412,8 @@ const Expenses = () => {
                     <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Type</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Description</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 700 }}>Amount (THB)</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Remarks</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 700 }}>Amount (THB)</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -423,13 +423,9 @@ const Expenses = () => {
                       <TableCell>{expense.date}</TableCell>
                       <TableCell>{expense.expense_type_name}</TableCell>
                       <TableCell>{expense.description}</TableCell>
+                      <TableCell>{expense.remarks}</TableCell>
                       <TableCell align="right">
                         {parseFloat(expense.amount_thb).toLocaleString('en-US', { style: 'currency', currency: 'THB' })}
-                      </TableCell>
-                      <TableCell>
-                        <Tooltip title={expense.remarks || 'No remarks'}>
-                          <IconButton size="small"><InfoIcon fontSize="inherit" /></IconButton>
-                        </Tooltip>
                       </TableCell>
                       <TableCell>
                         <IconButton onClick={() => handleEditClick(expense)} size="small"><EditIcon fontSize="inherit"/></IconButton>
@@ -440,13 +436,13 @@ const Expenses = () => {
                 </TableBody>
                 <TableHead>
                   <TableRow>
-                    <TableCell colSpan={3} align="right"><Typography variant="h6">Total:</Typography></TableCell>
+                    <TableCell colSpan={4} align="right"><Typography variant="h6">Total:</Typography></TableCell>
                     <TableCell align="right">
                       <Typography variant="h6">
                         {expenses.reduce((total, expense) => total + parseFloat(expense.amount_thb || 0), 0).toLocaleString('en-US', { style: 'currency', currency: 'THB' })}
                       </Typography>
                     </TableCell>
-                    <TableCell colSpan={2}></TableCell>
+                    <TableCell colSpan={1}></TableCell>
                   </TableRow>
                 </TableHead>
               </Table>
