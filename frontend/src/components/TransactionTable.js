@@ -1167,8 +1167,8 @@ const TransactionTable = () => {
                       background: 'linear-gradient(135deg, #00FF7F 0%, #00CC66 100%)',
                       boxShadow: '0 8px 25px rgba(0, 255, 127, 0.3)',
                       border: 'none',
-                      height: '80px', 
-                      display: 'flex',
+                      height: { xs: '80px', sm: 'auto' },
+                      display: { xs: 'flex', sm: 'block' },
                       alignItems: 'center',
                       justifyContent: 'center',
                       '&:hover': {
@@ -1180,7 +1180,7 @@ const TransactionTable = () => {
                       cursor: 'pointer'
                     }}
                   >
-                    <CardContent sx={{ p: 0, textAlign: 'center', '&:last-child': { p: 0 } }}>
+                    <CardContent sx={{ p: { xs: 0, sm: 3 }, textAlign: 'center', '&:last-child': { pb: { xs: 0, sm: 3 } } }}>
                       <Button
                         type="submit"
                         variant="contained"
@@ -1188,11 +1188,12 @@ const TransactionTable = () => {
                         disabled={loading}
                         sx={{ 
                           width: '100%',
-                          height: '100%',
+                          height: { xs: '100%', sm: 'auto' },
                           backgroundColor: 'transparent',
                           color: '#000',
                           fontWeight: 700,
                           fontSize: '1.1rem',
+                          py: { xs: 0, sm: 2 },
                           boxShadow: 'none',
                           textTransform: 'none',
                           '&:hover': {
@@ -1227,8 +1228,8 @@ const TransactionTable = () => {
                           background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
                           boxShadow: '0 6px 20px rgba(76, 175, 80, 0.3)',
                           border: 'none',
-                          height: '53px',
-                          display: 'flex',
+                          height: { xs: '53px', sm: 'auto' },
+                          display: { xs: 'flex', sm: 'block' },
                           alignItems: 'center',
                           justifyContent: 'center',
                           cursor: 'pointer',
@@ -1241,18 +1242,21 @@ const TransactionTable = () => {
                         }}
                         onClick={calculateProfit}
                       >
-                        <CardContent sx={{ p: 0, textAlign: 'center', '&:last-child': { p: 0 } }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <CalculateIcon sx={{ fontSize: 22, color: 'white' }} />
-                            <Typography variant="body1" sx={{ color: 'white', fontWeight: 600 }}>
+                        <CardContent sx={{ p: { xs: 0, sm: 3 }, textAlign: 'center', '&:last-child': { pb: { xs: 0, sm: 3 } } }}>
+                          <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' }, alignItems: 'center', gap: 1 }}>
+                            <CalculateIcon sx={{ fontSize: { xs: 22, sm: 32 }, color: 'white' }} />
+                            <Typography variant="h6" sx={{ color: 'white', fontWeight: 600, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
                               {calculatingProfit ? (
                                 <>
-                                  <CircularProgress size={14} sx={{ mr: 1, color: 'inherit' }} />
+                                  <CircularProgress size={16} sx={{ mr: 1, color: 'inherit' }} />
                                   Calculating...
                                 </>
                               ) : (
                                 'Calculate Profits'
                               )}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', display: { xs: 'none', sm: 'block' } }}>
+                              Calculate transaction profits
                             </Typography>
                           </Box>
                         </CardContent>
@@ -1267,8 +1271,8 @@ const TransactionTable = () => {
                           background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
                           boxShadow: '0 6px 20px rgba(33, 150, 243, 0.3)',
                           border: 'none',
-                          height: '53px',
-                          display: 'flex',
+                          height: { xs: '53px', sm: 'auto' },
+                          display: { xs: 'flex', sm: 'block' },
                           alignItems: 'center',
                           justifyContent: 'center',
                           cursor: 'pointer',
@@ -1281,11 +1285,14 @@ const TransactionTable = () => {
                         }}
                         onClick={handleExportTransactions}
                       >
-                        <CardContent sx={{ p: 0, textAlign: 'center', '&:last-child': { p: 0 } }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <DownloadIcon sx={{ fontSize: 22, color: 'white' }} />
-                            <Typography variant="body1" sx={{ color: 'white', fontWeight: 600 }}>
+                        <CardContent sx={{ p: { xs: 0, sm: 3 }, textAlign: 'center', '&:last-child': { pb: { xs: 0, sm: 3 } } }}>
+                          <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' }, alignItems: 'center', gap: 1 }}>
+                            <DownloadIcon sx={{ fontSize: { xs: 22, sm: 32 }, color: 'white' }} />
+                            <Typography variant="h6" sx={{ color: 'white', fontWeight: 600, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
                               Export Data
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', display: { xs: 'none', sm: 'block' } }}>
+                              Download transactions CSV
                             </Typography>
                           </Box>
                         </CardContent>
