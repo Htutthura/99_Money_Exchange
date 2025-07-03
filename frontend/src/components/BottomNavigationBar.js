@@ -57,10 +57,12 @@ const BottomNavigationBar = ({ currentTab, onTabChange }) => {
         right: 0,
         zIndex: 1000,
         backgroundColor: '#1a1a1a', // Dark background
-        paddingTop: '12px',
-        paddingBottom: 'calc(12px + env(safe-area-inset-bottom))', // Safe area padding
-        justifyContent: 'space-around',
-        alignItems: 'center',
+        paddingTop: '16px',
+        paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', // Safe area padding
+        paddingLeft: '8px',
+        paddingRight: '8px',
+        justifyContent: 'space-between', // Even distribution across full width
+        alignItems: 'flex-start', // Align to top for consistent positioning
         borderTop: '1px solid #333',
       }}
     >
@@ -76,24 +78,25 @@ const BottomNavigationBar = ({ currentTab, onTabChange }) => {
               flexDirection: 'column',
               alignItems: 'center',
               cursor: 'pointer',
-              minWidth: '50px',
-              padding: '4px',
+              flex: 1, // Equal width for all items
+              maxWidth: '60px', // Consistent max width
+              padding: '0 2px', // Minimal padding for balance
             }}
           >
             {/* Circular Icon Background */}
             <Box
               sx={{
-                width: '50px',
-                height: '50px',
+                width: '48px', // Slightly smaller for better balance
+                height: '48px',
                 borderRadius: '50%',
                 backgroundColor: isActive ? '#00FF7F' : '#333', // Green for active, dark for inactive
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '4px',
+                marginBottom: '6px', // Consistent spacing to text
                 transition: 'background-color 0.2s ease',
                 '& .MuiSvgIcon-root': {
-                  fontSize: '24px',
+                  fontSize: '22px', // Consistent icon size
                   color: isActive ? '#000' : '#fff', // Black icon on green, white on dark
                 },
               }}
@@ -101,19 +104,29 @@ const BottomNavigationBar = ({ currentTab, onTabChange }) => {
               {item.icon}
             </Box>
             
-            {/* Label */}
-            <Typography
+            {/* Label - Fixed height container for alignment */}
+            <Box
               sx={{
-                fontSize: '0.7rem',
-                fontWeight: 400,
-                color: isActive ? '#00FF7F' : '#888', // Green text for active, gray for inactive
-                textAlign: 'center',
-                lineHeight: 1.1,
-                maxWidth: '60px',
+                height: '28px', // Fixed height for text alignment
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {item.label}
-            </Typography>
+              <Typography
+                sx={{
+                  fontSize: '0.65rem', // Slightly smaller for better fit
+                  fontWeight: 400,
+                  color: isActive ? '#00FF7F' : '#888', // Green text for active, gray for inactive
+                  textAlign: 'center',
+                  lineHeight: 1.1,
+                  wordBreak: 'break-word', // Allow text wrapping if needed
+                  maxWidth: '56px', // Prevent text overflow
+                }}
+              >
+                {item.label}
+              </Typography>
+            </Box>
           </Box>
         );
       })}
