@@ -1176,7 +1176,7 @@ const TransactionTable = () => {
                       cursor: 'pointer'
                     }}
                   >
-                    <CardContent sx={{ p: 3, textAlign: 'center', '&:last-child': { pb: 3 } }}>
+                    <CardContent sx={{ p: 1.5, textAlign: 'center', '&:last-child': { pb: 1.5 } }}>
                       <Button
                         type="submit"
                         variant="contained"
@@ -1188,7 +1188,7 @@ const TransactionTable = () => {
                           color: '#000',
                           fontWeight: 700,
                           fontSize: '1.1rem',
-                          py: 2,
+                          py: 1,
                           boxShadow: 'none',
                           textTransform: 'none',
                           '&:hover': {
@@ -1233,9 +1233,9 @@ const TransactionTable = () => {
                         }}
                         onClick={calculateProfit}
                       >
-                        <CardContent sx={{ p: 3, textAlign: 'center', '&:last-child': { pb: 3 } }}>
+                        <CardContent sx={{ p: 2, textAlign: 'center', '&:last-child': { pb: 2 } }}>
                           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                            <CalculateIcon sx={{ fontSize: 32, color: 'white' }} />
+                            <CalculateIcon sx={{ fontSize: 28, color: 'white' }} />
                             <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
                               {calculatingProfit ? (
                                 <>
@@ -1272,9 +1272,9 @@ const TransactionTable = () => {
                         }}
                         onClick={handleExportTransactions}
                       >
-                        <CardContent sx={{ p: 3, textAlign: 'center', '&:last-child': { pb: 3 } }}>
+                        <CardContent sx={{ p: 2, textAlign: 'center', '&:last-child': { pb: 2 } }}>
                           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                            <DownloadIcon sx={{ fontSize: 32, color: 'white' }} />
+                            <DownloadIcon sx={{ fontSize: 28, color: 'white' }} />
                             <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
                               Export Data
                             </Typography>
