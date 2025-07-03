@@ -631,9 +631,8 @@ const BankBalances = () => {
     try {
       setLoading(true);
       
-      // Create the export URL
-      const baseUrl = window.location.origin;
-      const url = `${baseUrl}/api/transactions/balances/export/?date=${selectedDate}&rate=${exchangeRate}`;
+      // Create the export URL - use correct PythonAnywhere backend URL
+      const url = `https://99moneyexchange.pythonanywhere.com/api/transactions/balances/export/?date=${selectedDate}&rate=${exchangeRate}`;
       
       console.log('Exporting balances from URL:', url);
       
