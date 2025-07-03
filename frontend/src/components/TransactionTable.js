@@ -1233,7 +1233,7 @@ const TransactionTable = () => {
                         }}
                         onClick={calculateProfit}
                       >
-                        <CardContent sx={{ p: 2, textAlign: 'center', '&:last-child': { pb: 2 } }}>
+                        <CardContent sx={{ p: 1, textAlign: 'center', '&:last-child': { pb: 1 } }}>
                           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
                             <CalculateIcon sx={{ fontSize: 28, color: 'white' }} />
                             <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
@@ -1245,9 +1245,6 @@ const TransactionTable = () => {
                               ) : (
                                 'Calculate Profits'
                               )}
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                              Calculate transaction profits
                             </Typography>
                           </Box>
                         </CardContent>
@@ -1272,14 +1269,11 @@ const TransactionTable = () => {
                         }}
                         onClick={handleExportTransactions}
                       >
-                        <CardContent sx={{ p: 2, textAlign: 'center', '&:last-child': { pb: 2 } }}>
+                        <CardContent sx={{ p: 1, textAlign: 'center', '&:last-child': { pb: 1 } }}>
                           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
                             <DownloadIcon sx={{ fontSize: 28, color: 'white' }} />
                             <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
                               Export Data
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                              Download transactions CSV
                             </Typography>
                           </Box>
                         </CardContent>
