@@ -1216,7 +1216,7 @@ const TransactionTable = () => {
                   {/* Row 2: Calculate Profits and Export Data - Two Cards */}
                   <Grid container spacing={2}>
                     {/* Calculate Profits Card */}
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={6}>
                       <Card 
                         sx={{ 
                           borderRadius: 3,
@@ -1255,7 +1255,7 @@ const TransactionTable = () => {
                     </Grid>
 
                     {/* Export Data Card */}
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={6}>
                       <Card 
                         sx={{ 
                           borderRadius: 3,
