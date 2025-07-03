@@ -1,5 +1,5 @@
 import React from 'react';
-import { BottomNavigation, BottomNavigationAction, Paper, Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { 
   Receipt, 
   Money, 
@@ -43,91 +43,80 @@ const BottomNavigationBar = ({ currentTab, onTabChange }) => {
     },
   ];
 
-  const handleChange = (event, newValue) => {
-    onTabChange(event, newValue);
+  const handleTabClick = (value) => {
+    onTabChange(null, value);
   };
 
   return (
     <Box
       sx={{
-        display: { xs: 'block', md: 'none' }, // Only show on mobile
+        display: { xs: 'flex', md: 'none' }, // Only show on mobile
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
         zIndex: 1000,
-        // Add safe area padding for newer phones
-        paddingBottom: 'env(safe-area-inset-bottom)',
+        backgroundColor: '#1a1a1a', // Dark background
+        paddingTop: '12px',
+        paddingBottom: 'calc(12px + env(safe-area-inset-bottom))', // Safe area padding
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        borderTop: '1px solid #333',
       }}
     >
-      <Paper 
-        elevation={0}
-        sx={{
-          borderRadius: 0,
-          backgroundColor: '#1a1a1a', // Dark background to match photo
-          borderTop: '1px solid #333',
-        }}
-      >
-        <BottomNavigation
-          value={currentTab}
-          onChange={handleChange}
-          showLabels
-          sx={{
-            height: 80, // Slightly taller to match photo
-            backgroundColor: '#1a1a1a', // Match dark background
-            '& .MuiBottomNavigationAction-root': {
-              minWidth: 'auto',
-              padding: '6px 4px 8px 4px',
-              color: '#888', // Inactive tab color
-              fontSize: '0.75rem',
-              fontWeight: 400,
-              transition: 'color 0.2s ease',
-              
-              // Active state - highlighted in green like the photo
-              '&.Mui-selected': {
-                color: '#00FF7F', // Bright green for active tab
-                '& .MuiBottomNavigationAction-label': {
-                  fontSize: '0.75rem',
-                  fontWeight: 500,
-                  marginTop: '2px',
-                },
-                '& .MuiSvgIcon-root': {
-                  fontSize: '26px',
-                },
-              },
-              
-              // Icon styling
-              '& .MuiSvgIcon-root': {
-                fontSize: '24px',
+      {navigationItems.map((item) => {
+        const isActive = currentTab === item.value;
+        
+        return (
+          <Box
+            key={item.value}
+            onClick={() => handleTabClick(item.value)}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              cursor: 'pointer',
+              minWidth: '50px',
+              padding: '4px',
+            }}
+          >
+            {/* Circular Icon Background */}
+            <Box
+              sx={{
+                width: '50px',
+                height: '50px',
+                borderRadius: '50%',
+                backgroundColor: isActive ? '#00FF7F' : '#333', // Green for active, dark for inactive
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 marginBottom: '4px',
-                transition: 'font-size 0.2s ease',
-              },
-              
-              // Label styling
-              '& .MuiBottomNavigationAction-label': {
+                transition: 'background-color 0.2s ease',
+                '& .MuiSvgIcon-root': {
+                  fontSize: '24px',
+                  color: isActive ? '#000' : '#fff', // Black icon on green, white on dark
+                },
+              }}
+            >
+              {item.icon}
+            </Box>
+            
+            {/* Label */}
+            <Typography
+              sx={{
                 fontSize: '0.7rem',
                 fontWeight: 400,
-                lineHeight: 1.2,
-                marginTop: '2px',
-                transition: 'all 0.2s ease',
-                '&.Mui-selected': {
-                  fontSize: '0.75rem',
-                  fontWeight: 500,
-                },
-              },
-            },
-          }}
-        >
-          {navigationItems.map((item) => (
-            <BottomNavigationAction
-              key={item.value}
-              label={item.label}
-              value={item.value}
-              icon={item.icon}
-            />
-          ))}
-        </BottomNavigation>
-      </Paper>
+                color: isActive ? '#00FF7F' : '#888', // Green text for active, gray for inactive
+                textAlign: 'center',
+                lineHeight: 1.1,
+                maxWidth: '60px',
+              }}
+            >
+              {item.label}
+            </Typography>
+          </Box>
+        );
+      })}
     </Box>
   );
 };
