@@ -1167,6 +1167,10 @@ const TransactionTable = () => {
                       background: 'linear-gradient(135deg, #00FF7F 0%, #00CC66 100%)',
                       boxShadow: '0 8px 25px rgba(0, 255, 127, 0.3)',
                       border: 'none',
+                      height: '80px', 
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       '&:hover': {
                         background: 'linear-gradient(135deg, #00CC66 0%, #00AA55 100%)',
                         transform: 'translateY(-2px)',
@@ -1176,7 +1180,7 @@ const TransactionTable = () => {
                       cursor: 'pointer'
                     }}
                   >
-                    <CardContent sx={{ p: 1.5, textAlign: 'center', '&:last-child': { pb: 1.5 } }}>
+                    <CardContent sx={{ p: 0, textAlign: 'center', '&:last-child': { p: 0 } }}>
                       <Button
                         type="submit"
                         variant="contained"
@@ -1184,11 +1188,11 @@ const TransactionTable = () => {
                         disabled={loading}
                         sx={{ 
                           width: '100%',
+                          height: '100%',
                           backgroundColor: 'transparent',
                           color: '#000',
                           fontWeight: 700,
                           fontSize: '1.1rem',
-                          py: 1,
                           boxShadow: 'none',
                           textTransform: 'none',
                           '&:hover': {
@@ -1223,6 +1227,10 @@ const TransactionTable = () => {
                           background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
                           boxShadow: '0 6px 20px rgba(76, 175, 80, 0.3)',
                           border: 'none',
+                          height: '53px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           cursor: 'pointer',
                           '&:hover': {
                             background: 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
@@ -1233,13 +1241,13 @@ const TransactionTable = () => {
                         }}
                         onClick={calculateProfit}
                       >
-                        <CardContent sx={{ p: 1, textAlign: 'center', '&:last-child': { pb: 1 } }}>
-                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                            <CalculateIcon sx={{ fontSize: 28, color: 'white' }} />
-                            <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+                        <CardContent sx={{ p: 0, textAlign: 'center', '&:last-child': { p: 0 } }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <CalculateIcon sx={{ fontSize: 22, color: 'white' }} />
+                            <Typography variant="body1" sx={{ color: 'white', fontWeight: 600 }}>
                               {calculatingProfit ? (
                                 <>
-                                  <CircularProgress size={16} sx={{ mr: 1, color: 'inherit' }} />
+                                  <CircularProgress size={14} sx={{ mr: 1, color: 'inherit' }} />
                                   Calculating...
                                 </>
                               ) : (
@@ -1259,6 +1267,10 @@ const TransactionTable = () => {
                           background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
                           boxShadow: '0 6px 20px rgba(33, 150, 243, 0.3)',
                           border: 'none',
+                          height: '53px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           cursor: 'pointer',
                           '&:hover': {
                             background: 'linear-gradient(135deg, #1976D2 0%, #1565C0 100%)',
@@ -1269,10 +1281,10 @@ const TransactionTable = () => {
                         }}
                         onClick={handleExportTransactions}
                       >
-                        <CardContent sx={{ p: 1, textAlign: 'center', '&:last-child': { pb: 1 } }}>
-                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                            <DownloadIcon sx={{ fontSize: 28, color: 'white' }} />
-                            <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+                        <CardContent sx={{ p: 0, textAlign: 'center', '&:last-child': { p: 0 } }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <DownloadIcon sx={{ fontSize: 22, color: 'white' }} />
+                            <Typography variant="body1" sx={{ color: 'white', fontWeight: 600 }}>
                               Export Data
                             </Typography>
                           </Box>
@@ -1487,47 +1499,16 @@ const TransactionTable = () => {
       </Card>
 
       {/* Enhanced Transaction Table */}
-      <Card sx={{ 
+      <Paper sx={{ 
+        mt: 4,
         borderRadius: 3,
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
         border: '1px solid',
         borderColor: 'divider',
-        overflow: 'hidden'
+        overflow: 'hidden' // Ensures the container clips its children
       }}>
-        <Box sx={{ 
-          background: 'linear-gradient(135deg, #0B1C1C 0%, #1a3333 100%)',
-          p: 3,
-          color: 'white'
-        }}>
-          <Typography variant="h6" sx={{ 
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1
-          }}>
-            📋 Transaction History
-          </Typography>
-        </Box>
-        
-        <TableContainer sx={{ 
-          maxHeight: { xs: '70vh', md: 'none' },
-          '&::-webkit-scrollbar': {
-            width: '8px',
-            height: '8px'
-          },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: '#f1f1f1',
-            borderRadius: '4px'
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#c1c1c1',
-            borderRadius: '4px',
-            '&:hover': {
-              backgroundColor: '#a8a8a8'
-            }
-          }
-        }}>
-          <Table stickyHeader>
+        <TableContainer sx={{ maxHeight: 'calc(100vh - 400px)', overflowX: 'auto' }}>
+          <Table stickyHeader aria-label="transactions table">
             <TableHead>
               <TableRow>
                 <TableCell sx={{ 
@@ -1843,7 +1824,7 @@ const TransactionTable = () => {
             }}
           />
         </Box>
-      </Card>
+      </Paper>
 
       {/* Add Remaining Transactions display outside of dialog */}
       {profitData && profitData.remaining_transactions && (
