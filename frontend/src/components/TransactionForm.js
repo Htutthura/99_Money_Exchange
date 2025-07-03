@@ -515,27 +515,27 @@ const TransactionForm = ({ onSubmit, initialValues = null, editMode = false, act
           {/* Action buttons row */}
           <Grid item xs={12}>
             <Divider sx={{ my: 2 }} />
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center'
-            }}>
-              {/* Left side buttons */}
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                {!editMode && actionButtons}
+            {editMode ? (
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'flex-end', 
+                alignItems: 'center'
+              }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Updating...' : 'Update Transaction'}
+                </Button>
               </Box>
-              
-              {/* Right side button */}
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="large"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Creating...' : (editMode ? 'Update Transaction' : 'Add Transaction')}
-              </Button>
-            </Box>
+            ) : (
+              <Box sx={{ width: '100%' }}>
+                {actionButtons}
+              </Box>
+            )}
           </Grid>
         </Grid>
       </form>

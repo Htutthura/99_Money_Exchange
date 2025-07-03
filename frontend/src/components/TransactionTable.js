@@ -1158,67 +1158,134 @@ const TransactionTable = () => {
             <TransactionForm 
               onSubmit={handleSubmit}
               actionButtons={
-                <Box sx={{ 
-                  display: 'flex', 
-                  gap: 2, 
-                  flexWrap: 'wrap',
-                  justifyContent: { xs: 'stretch', sm: 'flex-start' }
-                }}>
-                  <Button
-                    variant="contained"
-                    startIcon={<CalculateIcon />}
-                    onClick={calculateProfit}
-                    disabled={calculatingProfit}
+                <Box sx={{ width: '100%' }}>
+                  {/* Row 1: Add Transaction Button - Full Width */}
+                  <Card 
                     sx={{ 
-                      flex: { xs: 1, sm: 'none' },
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      px: 3,
-                      py: 1.5,
+                      mb: 2,
+                      borderRadius: 3,
                       background: 'linear-gradient(135deg, #00FF7F 0%, #00CC66 100%)',
+                      boxShadow: '0 8px 25px rgba(0, 255, 127, 0.3)',
+                      border: 'none',
                       '&:hover': {
                         background: 'linear-gradient(135deg, #00CC66 0%, #00AA55 100%)',
                         transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 25px rgba(0, 255, 127, 0.4)'
+                        boxShadow: '0 12px 35px rgba(0, 255, 127, 0.4)',
                       },
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.3s ease',
+                      cursor: 'pointer'
                     }}
                   >
-                    {calculatingProfit ? (
-                      <>
-                        <CircularProgress size={16} sx={{ mr: 1, color: 'inherit' }} />
-                        Calculating...
-                      </>
-                    ) : (
-                      'Calculate Profits'
-                    )}
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<DownloadIcon />}
-                    onClick={handleExportTransactions}
-                    sx={{ 
-                      flex: { xs: 1, sm: 'none' },
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      px: 3,
-                      py: 1.5,
-                      borderColor: 'primary.main',
-                      color: 'primary.main',
-                      '&:hover': {
-                        borderColor: 'primary.dark',
-                        backgroundColor: 'primary.main',
-                        color: 'white',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 25px rgba(0, 255, 127, 0.2)'
-                      },
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    Export Data
-                  </Button>
+                    <CardContent sx={{ p: 3, textAlign: 'center', '&:last-child': { pb: 3 } }}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        size="large"
+                        disabled={loading}
+                        sx={{ 
+                          width: '100%',
+                          backgroundColor: 'transparent',
+                          color: '#000',
+                          fontWeight: 700,
+                          fontSize: '1.1rem',
+                          py: 2,
+                          boxShadow: 'none',
+                          textTransform: 'none',
+                          '&:hover': {
+                            backgroundColor: 'transparent',
+                            boxShadow: 'none',
+                          },
+                          '&:disabled': {
+                            backgroundColor: 'transparent',
+                            color: 'rgba(0, 0, 0, 0.5)',
+                          }
+                        }}
+                      >
+                        {loading ? (
+                          <>
+                            <CircularProgress size={20} sx={{ mr: 1, color: 'inherit' }} />
+                            Creating...
+                          </>
+                        ) : (
+                          'Add Transaction'
+                        )}
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Row 2: Calculate Profits and Export Data - Two Cards */}
+                  <Grid container spacing={2}>
+                    {/* Calculate Profits Card */}
+                    <Grid item xs={12} sm={6}>
+                      <Card 
+                        sx={{ 
+                          borderRadius: 3,
+                          background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+                          boxShadow: '0 6px 20px rgba(76, 175, 80, 0.3)',
+                          border: 'none',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 8px 25px rgba(76, 175, 80, 0.4)',
+                          },
+                          transition: 'all 0.3s ease'
+                        }}
+                        onClick={calculateProfit}
+                      >
+                        <CardContent sx={{ p: 3, textAlign: 'center', '&:last-child': { pb: 3 } }}>
+                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                            <CalculateIcon sx={{ fontSize: 32, color: 'white' }} />
+                            <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+                              {calculatingProfit ? (
+                                <>
+                                  <CircularProgress size={16} sx={{ mr: 1, color: 'inherit' }} />
+                                  Calculating...
+                                </>
+                              ) : (
+                                'Calculate Profits'
+                              )}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                              Calculate transaction profits
+                            </Typography>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+
+                    {/* Export Data Card */}
+                    <Grid item xs={12} sm={6}>
+                      <Card 
+                        sx={{ 
+                          borderRadius: 3,
+                          background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
+                          boxShadow: '0 6px 20px rgba(33, 150, 243, 0.3)',
+                          border: 'none',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #1976D2 0%, #1565C0 100%)',
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 8px 25px rgba(33, 150, 243, 0.4)',
+                          },
+                          transition: 'all 0.3s ease'
+                        }}
+                        onClick={handleExportTransactions}
+                      >
+                        <CardContent sx={{ p: 3, textAlign: 'center', '&:last-child': { pb: 3 } }}>
+                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                            <DownloadIcon sx={{ fontSize: 32, color: 'white' }} />
+                            <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+                              Export Data
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                              Download transactions CSV
+                            </Typography>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  </Grid>
                 </Box>
               }
             />
