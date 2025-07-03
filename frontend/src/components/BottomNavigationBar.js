@@ -61,11 +61,11 @@ const BottomNavigationBar = ({ currentTab, onTabChange }) => {
       }}
     >
       <Paper 
-        elevation={8}
+        elevation={0}
         sx={{
-          borderRadius: '20px 20px 0 0',
-          overflow: 'hidden',
-          background: 'linear-gradient(135deg, #0B1C1C 0%, #1a2f2f 100%)',
+          borderRadius: 0,
+          backgroundColor: '#1a1a1a', // Dark background to match photo
+          borderTop: '1px solid #333',
         }}
       >
         <BottomNavigation
@@ -73,44 +73,46 @@ const BottomNavigationBar = ({ currentTab, onTabChange }) => {
           onChange={handleChange}
           showLabels
           sx={{
-            height: 70,
-            backgroundColor: 'transparent',
+            height: 80, // Slightly taller to match photo
+            backgroundColor: '#1a1a1a', // Match dark background
             '& .MuiBottomNavigationAction-root': {
               minWidth: 'auto',
-              padding: '8px 4px',
-              color: 'rgba(255, 255, 255, 0.6)',
+              padding: '6px 4px 8px 4px',
+              color: '#888', // Inactive tab color
               fontSize: '0.75rem',
-              fontWeight: 500,
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              fontWeight: 400,
+              transition: 'color 0.2s ease',
+              
+              // Active state - highlighted in green like the photo
               '&.Mui-selected': {
-                color: '#00FF7F',
-                transform: 'translateY(-2px)',
+                color: '#00FF7F', // Bright green for active tab
                 '& .MuiBottomNavigationAction-label': {
                   fontSize: '0.75rem',
-                  fontWeight: 600,
-                  opacity: 1,
+                  fontWeight: 500,
+                  marginTop: '2px',
                 },
                 '& .MuiSvgIcon-root': {
-                  fontSize: '28px',
-                  filter: 'drop-shadow(0 2px 4px rgba(0, 255, 127, 0.3))',
+                  fontSize: '26px',
                 },
               },
-              '&:hover': {
-                color: 'rgba(0, 255, 127, 0.8)',
-                transform: 'translateY(-1px)',
-              },
+              
+              // Icon styling
               '& .MuiSvgIcon-root': {
                 fontSize: '24px',
-                marginBottom: '2px',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                marginBottom: '4px',
+                transition: 'font-size 0.2s ease',
               },
+              
+              // Label styling
               '& .MuiBottomNavigationAction-label': {
                 fontSize: '0.7rem',
-                fontWeight: 500,
-                opacity: 0.8,
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                fontWeight: 400,
+                lineHeight: 1.2,
+                marginTop: '2px',
+                transition: 'all 0.2s ease',
                 '&.Mui-selected': {
-                  opacity: 1,
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
                 },
               },
             },
@@ -122,24 +124,6 @@ const BottomNavigationBar = ({ currentTab, onTabChange }) => {
               label={item.label}
               value={item.value}
               icon={item.icon}
-              sx={{
-                // Minimum touch target of 48px
-                minHeight: '48px',
-                // Add subtle animation on active state
-                '&.Mui-selected': {
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: '4px',
-                    height: '3px',
-                    backgroundColor: '#00FF7F',
-                    borderRadius: '0 0 2px 2px',
-                  },
-                },
-              }}
             />
           ))}
         </BottomNavigation>
