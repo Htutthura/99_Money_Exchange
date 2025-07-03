@@ -1258,22 +1258,34 @@ const TransactionTable = () => {
                   </Box>
 
                   {/* Desktop View (Simple Buttons) */}
-                  <Box sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'flex-end', alignItems: 'center', gap: 2, mt: 3, width: '100%' }}>
-                    <Button 
-                      variant="outlined" 
-                      onClick={calculateProfit} 
-                      startIcon={<CalculateIcon />}
-                      disabled={calculatingProfit}
-                    >
-                      {calculatingProfit ? 'Calculating...' : 'Calculate Profits'}
-                    </Button>
-                    <Button 
-                      variant="outlined" 
-                      onClick={handleExportTransactions} 
-                      startIcon={<DownloadIcon />}
-                    >
-                      Export Data
-                    </Button>
+                  <Box sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'space-between', alignItems: 'center', mt: 3, width: '100%' }}>
+                    {/* Left Buttons */}
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      <Button 
+                        variant="contained" 
+                        onClick={calculateProfit} 
+                        startIcon={<CalculateIcon />}
+                        disabled={calculatingProfit}
+                        sx={{
+                          background: 'linear-gradient(45deg, #4CAF50 30%, #81C784 90%)',
+                          color: 'white',
+                          '&:hover': {
+                            background: 'linear-gradient(45deg, #45a049 30%, #66bb6a 90%)',
+                          }
+                        }}
+                      >
+                        {calculatingProfit ? 'Calculating...' : 'Calculate Profits'}
+                      </Button>
+                      <Button 
+                        variant="outlined" 
+                        onClick={handleExportTransactions} 
+                        startIcon={<DownloadIcon />}
+                      >
+                        Export Data
+                      </Button>
+                    </Box>
+
+                    {/* Right Button */}
                     <Button 
                       type="submit" 
                       variant="contained" 
