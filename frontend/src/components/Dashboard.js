@@ -744,75 +744,7 @@ const Dashboard = ({ autoRecalculate = false }) => {
         </>
       )}
 
-      {/* Remaining THB and MMK Transactions */}
-      <Grid container spacing={4} sx={{ mt: 2 }}>
-        <Grid item xs={12} md={6}>
-          <StyledPaper>
-            <Typography variant="h6" gutterBottom>
-              Remaining THB Transactions (For Sale)
-            </Typography>
-            <TableContainer sx={{ maxHeight: 440, overflowX: 'auto' }}>
-              <Table stickyHeader size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Customer</TableCell>
-                    <TableCell>Date</TableCell>
-                    <TableCell>THB Amount</TableCell>
-                    <TableCell>MMK Amount</TableCell>
-                    <TableCell>Rate</TableCell>
-                    <TableCell>100K Rate</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(dashboardData?.remaining_transactions?.sell || []).map((transaction, index) => (
-                    <TableRow key={`sell-${index}`}>
-                      <TableCell>{transaction.customer}</TableCell>
-                      <TableCell>{new Date(transaction.date_time).toLocaleDateString('en-GB')}</TableCell>
-                      <TableCell>{formatSensitiveNumber(parseFloat(transaction.thb_amount), 'THB')}</TableCell>
-                      <TableCell>{formatSensitiveNumber(transaction.mmk_amount, 'MMK')}</TableCell>
-                      <TableCell>{transaction.rate}</TableCell>
-                      <TableCell>{transaction.hundred_k_rate}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </StyledPaper>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <StyledPaper>
-            <Typography variant="h6" gutterBottom>
-              Remaining MMK Transactions (For Purchase)
-            </Typography>
-            <TableContainer sx={{ maxHeight: 440, overflowX: 'auto' }}>
-              <Table stickyHeader size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Customer</TableCell>
-                    <TableCell>Date</TableCell>
-                    <TableCell>THB Amount</TableCell>
-                    <TableCell>MMK Amount</TableCell>
-                    <TableCell>Rate</TableCell>
-                    <TableCell>100K Rate</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(dashboardData?.remaining_transactions?.buy || []).map((transaction, index) => (
-                    <TableRow key={`buy-${index}`}>
-                      <TableCell>{transaction.customer}</TableCell>
-                      <TableCell>{new Date(transaction.date_time).toLocaleDateString('en-GB')}</TableCell>
-                      <TableCell>{formatSensitiveNumber(parseFloat(transaction.thb_amount), 'THB')}</TableCell>
-                      <TableCell>{formatSensitiveNumber(transaction.mmk_amount, 'MMK')}</TableCell>
-                      <TableCell>{transaction.rate}</TableCell>
-                      <TableCell>{transaction.hundred_k_rate}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </StyledPaper>
-        </Grid>
-      </Grid>
+
     </Box>
   );
 };
