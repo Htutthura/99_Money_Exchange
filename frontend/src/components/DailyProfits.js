@@ -348,9 +348,9 @@ const DailyProfits = () => {
           }
         }
       } else {
-        // For date range, use the new date range endpoint for better performance
+        // For date range, try the date range endpoint for better performance
+        // If it doesn't exist (404), fall back to day-by-day calculation silently
         try {
-          console.log(`Calculating date range profits from ${start} to ${end}`);
           const response = await fetch(`${API_BASE_URL}daily-profits/calculate-range/?start_date=${start}&end_date=${end}&timestamp=${new Date().getTime()}`, {
             method: 'GET',
             headers: {
@@ -362,7 +362,7 @@ const DailyProfits = () => {
 
           if (!response.ok) {
             if (response.status === 404) {
-              console.warn('Date range endpoint not found, falling back to day-by-day calculation');
+              // Endpoint not deployed yet, silently fall back to day-by-day calculation
               throw new Error('ENDPOINT_NOT_FOUND');
             }
             throw new Error(`Date range calculation failed: ${response.status}`);
@@ -431,7 +431,10 @@ const DailyProfits = () => {
             }));
           }
         } catch (error) {
-          console.error(`Error calculating date range profits:`, error);
+          // Only log non-404 errors to avoid console clutter
+          if (error.message !== 'ENDPOINT_NOT_FOUND') {
+            console.error(`Error calculating date range profits:`, error);
+          }
           // Fall back to day-by-day calculation
           // Reset summary totals since we're starting fresh calculation
           summaryTotals = {
@@ -449,7 +452,7 @@ const DailyProfits = () => {
             
             try {
               const dailyResult = await calculateDailyProfits(dateObj);
-              console.log(`Daily result for ${dateStr}:`, dailyResult);
+              // Debug: console.log(`Daily result for ${dateStr}:`, dailyResult);
               
               const dayTotalProfit = safeParseFloat(dailyResult.total_profit, 0);
               const dayBuySellProfit = safeParseFloat(dailyResult.buy_sell_profit, 0);
@@ -524,8 +527,8 @@ const DailyProfits = () => {
       }
 
       // Debug logging for summary totals
-      console.log('Final summary totals:', summaryTotals);
-      console.log('Individual profits:', profitsArr.map(p => ({ date: p.date, profit: p.total_profit })));
+      // console.log('Final summary totals:', summaryTotals);
+      // console.log('Individual profits:', profitsArr.map(p => ({ date: p.date, profit: p.total_profit })));
       
       setProfits(profitsArr);
       setSummary(summaryTotals);
