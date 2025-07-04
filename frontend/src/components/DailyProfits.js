@@ -29,6 +29,7 @@ import { subDays, startOfWeek, startOfMonth } from 'date-fns';
 import axios from 'axios';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { formatDateTime, formatDateForAPI, formatDateLong } from '../utils/dateUtils';
+import { safeParseFloat, formatNumberWithCommas, isValidNumber } from '../utils/numberUtils';
 
 const API_BASE_URL = 'https://99moneyexchange.pythonanywhere.com/api/transactions/';
 
@@ -148,18 +149,49 @@ const DailyProfits = () => {
     while (buyQueue.length > 0 && sellQueue.length > 0) {
       let buy = buyQueue[0];
       let sell = sellQueue[0];
-      const matchAmount = Math.min(buy.mmk_remaining, sell.mmk_remaining);
+      
+      // Validate rates to prevent division by zero
+      const buyRate = safeParseFloat(buy.rate, 0);
+      const sellRate = safeParseFloat(sell.rate, 0);
+      
+      if (buyRate <= 0 || sellRate <= 0) {
+        console.warn('Invalid rate detected, skipping transaction match:', { buy: buy.rate, sell: sell.rate });
+        buyQueue.shift();
+        sellQueue.shift();
+        continue;
+      }
+      
+      const buyMmk = safeParseFloat(buy.mmk_remaining, 0);
+      const sellMmk = safeParseFloat(sell.mmk_remaining, 0);
+      const matchAmount = Math.min(buyMmk, sellMmk);
+      
+      if (matchAmount <= 0) {
+        console.warn('Invalid match amount, skipping:', { buyMmk, sellMmk });
+        buyQueue.shift();
+        sellQueue.shift();
+        continue;
+      }
+      
       // Calculate profit for this match
-      const profit = (matchAmount / sell.rate) - (matchAmount / buy.rate);
+      const profit = (matchAmount / sellRate) - (matchAmount / buyRate);
+      
+      // Validate profit calculation
+      if (!isFinite(profit)) {
+        console.warn('Invalid profit calculation, skipping match:', { matchAmount, buyRate, sellRate });
+        buyQueue.shift();
+        sellQueue.shift();
+        continue;
+      }
+      
       matched.push({
         buy_customer: buy.customer,
         sell_customer: sell.customer,
         buy_time: buy.date_time,
         sell_time: sell.date_time,
         matched_mmk: matchAmount,
-        buy_rate: buy.rate,
-        sell_rate: sell.rate,
-        matched_thb: matchAmount / buy.rate,
+        buy_rate: buyRate,
+        sell_rate: sellRate,
+        matched_thb: matchAmount / buyRate,
         profit: profit,
       });
       totalProfit += profit;
@@ -329,26 +361,41 @@ const DailyProfits = () => {
           });
 
           if (!response.ok) {
+            if (response.status === 404) {
+              console.warn('Date range endpoint not found, falling back to day-by-day calculation');
+              throw new Error('ENDPOINT_NOT_FOUND');
+            }
             throw new Error(`Date range calculation failed: ${response.status}`);
           }
 
           const rangeResult = await response.json();
           
+          // Validate and sanitize response data
+          const totalProfit = safeParseFloat(rangeResult.total_profit, 0);
+          const buySellProfit = safeParseFloat(rangeResult.buy_sell_profit, 0);
+          const otherProfit = safeParseFloat(rangeResult.other_profit, 0);
+          const transactionCount = safeParseFloat(rangeResult.transaction_count, 0);
+          
+          console.log('Range result validation:', {
+            raw: rangeResult,
+            parsed: { totalProfit, buySellProfit, otherProfit, transactionCount }
+          });
+          
           // Create a single entry for the date range
           profitsArr.push({
             date: `${start} to ${end}`,
-            total_profit: rangeResult.total_profit || 0,
-            buy_sell_profit: rangeResult.buy_sell_profit || 0,
-            other_profit: rangeResult.other_profit || 0,
-            transactionCount: rangeResult.transaction_count || 0,
+            total_profit: totalProfit,
+            buy_sell_profit: buySellProfit,
+            other_profit: otherProfit,
+            transactionCount: transactionCount,
             thbVolume: 0, // We'll calculate these from transactions
             mmkVolume: 0,
             buyCount: 0,
             sellCount: 0,
           });
           
-          summaryTotals.totalProfit = rangeResult.total_profit || 0;
-          summaryTotals.transactionCount = rangeResult.transaction_count || 0;
+          summaryTotals.totalProfit = safeParseFloat(rangeResult.total_profit, 0);
+          summaryTotals.transactionCount = safeParseFloat(rangeResult.transaction_count, 0);
           
           // Get transaction details for volume and count calculations
           const transactions = await fetchTransactionsForRange(start, end);
@@ -505,16 +552,35 @@ const DailyProfits = () => {
   }, [dateMode, singleDate, startDate, endDate]);
 
   const formatCurrency = (amount) => {
+    // Handle invalid values first
     if (amount === null || amount === undefined) return '-';
+    
+    // Use safe parsing to handle string values and NaN
+    const numValue = safeParseFloat(amount, 0);
+    
+    // Check if the result is still NaN after parsing
+    if (isNaN(numValue) || !isFinite(numValue)) {
+      console.warn('Invalid currency value detected:', amount);
+      return 'THB 0.00'; // Return a safe default
+    }
+    
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'THB',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount);
+    }).format(numValue);
   };
 
-  const formatNumber = (num) => num ? num.toLocaleString() : '0';
+  const formatNumber = (num) => {
+    if (num === null || num === undefined) return '0';
+    const numValue = safeParseFloat(num, 0);
+    if (isNaN(numValue) || !isFinite(numValue)) {
+      console.warn('Invalid number value detected:', num);
+      return '0';
+    }
+    return numValue.toLocaleString();
+  };
 
   // Using the centralized formatDateTime function from dateUtils.js
   // with a wrapper for backward compatibility
